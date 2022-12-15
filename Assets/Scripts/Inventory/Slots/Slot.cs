@@ -1,6 +1,8 @@
+using UnityEngine;
+
 namespace Inventory.Slots
 {
-    public class Slot
+    public class Slot : MonoBehaviour
     {
         
     }

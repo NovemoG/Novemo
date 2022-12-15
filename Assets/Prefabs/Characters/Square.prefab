@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5431700769824258727}
   - component: {fileID: 5431700769824258720}
-  - component: {fileID: 5010186922996871184}
+  - component: {fileID: 3386690291905843316}
   m_Layer: 0
   m_Name: Square
   m_TagString: Untagged
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &5010186922996871184
+--- !u!114 &3386690291905843316
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,10 +94,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5431700769824258722}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35b65510874ff9b4198cb99c194cd655, type: 3}
+  m_Script: {fileID: 11500000, guid: 1c551462386a4f509b322127589a8403, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  level: 0
   stats:
   - statName: Health
     baseValue: 20
@@ -135,7 +134,10 @@ MonoBehaviour:
     baseValue: 0
   - statName: Ability Vampirism
     baseValue: 0
-  - statName: Block Chance
+  - statName: Counter Chance
     baseValue: 0.05
-  - statName: Pair Chance
+  - statName: Double Attack Chance
     baseValue: 0
+  level: 0
+  CurrentHealth: 0
+  CurrentMana: 0

@@ -1,6 +1,6 @@
 namespace Inventory.Slots
 {
-    public class CraftSlot
+    public class CraftSlot : Slot
     {
         
     }
