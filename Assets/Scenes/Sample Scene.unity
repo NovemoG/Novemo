@@ -713,11 +713,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1663423899}
   - component: {fileID: 1663423905}
-  - component: {fileID: 1663423904}
   - component: {fileID: 1663423903}
   - component: {fileID: 1663423902}
   - component: {fileID: 1663423901}
   - component: {fileID: 1663423900}
+  - component: {fileID: 1663423906}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -789,22 +789,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f049ff247f14bd6b240fa9bac8872c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1663423904
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1663423892}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e14080b4694f48645b5e8bdc1254129a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hoverItem: {fileID: 988820600}
-  HoverSlot: {fileID: 0}
-  Source: {fileID: 0}
-  Destination: {fileID: 0}
 --- !u!114 &1663423905
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -817,6 +801,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79dea0125225547d380cca6a8cfc13e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1663423906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1663423892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 388feb6c61aa54fffbe62d0ebcfab78b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverItem: {fileID: 988820600}
+  HoverSlot: {fileID: 0}
 --- !u!1 &2094066559
 GameObject:
   m_ObjectHideFlags: 0
