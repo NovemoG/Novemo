@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Enums;
 using UnityEngine;
 
@@ -15,8 +16,9 @@ namespace Items
 
         public int stackLimit;
 
-        //TODO create algorithm for this
-        public int ReferenceId => itemName.Length + itemDescription.Length + (int)itemRarity + (int)itemType;
+        public List<Tag> itemTags;
+        
+        public virtual int ReferenceId => itemName.Length + itemDescription.Length + (int)itemRarity + (int)itemType + stackLimit;
 
         #region Equality override
 
@@ -30,14 +32,21 @@ namespace Items
             return !(item1 == item2);
         }
 
-        private bool Equals(Item other)
+        protected virtual bool Equals(Item other)
         {
-            return base.Equals(other) && ReferenceId == other.ReferenceId;
+            var equalTags = true;
+            for (var i = 0; i < itemTags.Count; i++)
+            {
+                equalTags = other.itemTags[i] == itemTags[i];
+            }
+            
+            return base.Equals(other) && ReferenceId == other.ReferenceId && equalTags;
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
             return obj.GetType() == this.GetType() && Equals((Item)obj);
         }
 

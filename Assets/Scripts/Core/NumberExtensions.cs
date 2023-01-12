@@ -6,11 +6,11 @@ namespace Core
 	public static class NumberExtensions
 	{
 		/// <summary>
-		/// Compares float values using given 
+		/// Compares float values
 		/// </summary>
 		/// <param name="val1">First value</param>
 		/// <param name="val2">Second Value</param>
-		/// <param name="diff">Maximum fixed difference between two compared float values</param>
+		/// <param name="diff">Maximum given difference between two compared float values</param>
 		/// <returns></returns>
 		public static bool CompareWith(this float val1, float val2, float diff)
 		{
