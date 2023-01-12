@@ -15,8 +15,14 @@ namespace Items
         public Rarity itemRarity;
 
         public int stackLimit;
-
+        public int sizeRows;
+        public int sizeCols;
+        
         public List<Tag> itemTags;
+
+        //TODO calculate cost dynamically
+        public int sellCost;
+        public int buyCost;
         
         public virtual int ReferenceId => itemName.Length + itemDescription.Length + (int)itemRarity + (int)itemType + stackLimit;
 

@@ -6,6 +6,8 @@ namespace Managers
 {
     public class InventoryManager : MonoBehaviour
     {
+        public GameObject slotObject;
+        
         //TODO one inventory for chests (one for each size) only changing content while opening
         [SerializeField] private GameObject hoverItem;
         public Slot HoverSlot;
@@ -15,7 +17,7 @@ namespace Managers
 
         private void Awake()
         {
-            HoverSlot = hoverItem.GetComponent<Slot>();
+            
         }
     }
 }

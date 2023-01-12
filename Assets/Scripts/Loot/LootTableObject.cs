@@ -6,6 +6,6 @@ namespace Loot
 	[CreateAssetMenu(fileName = "Loot")]
 	public class LootTableObject : ScriptableObject
 	{
-		public List<Loot> loot;
+		public List<LootStruct> loot;
 	}
 }
