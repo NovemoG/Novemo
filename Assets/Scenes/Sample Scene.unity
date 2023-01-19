@@ -505,6 +505,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c36802b92fbb484cb0b1e6c22bf536a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  slotIcon: {fileID: 0}
   stackText: {fileID: 0}
 --- !u!1 &1194869780
 GameObject:
@@ -798,9 +799,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 964c9dcd4f0642079d46fc4ace52edbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  one: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+  two: {fileID: 11400000, guid: e5250a8c2013f43dab00829ecbd02584, type: 2}
+  onetwo: {fileID: 11400000, guid: 9a83ebcc05fef4828ae2da71de62532c, type: 2}
   rows: 20
   cols: 12
-  Slots: []
+  freeSlots: 0
 --- !u!1 &1663423892
 GameObject:
   m_ObjectHideFlags: 0

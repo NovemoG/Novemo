@@ -10,7 +10,9 @@ namespace Items
     {
         public string itemName;
         public string itemDescription;
-        
+        public Sprite itemIcon;
+        //public GeneratedImage itemIcon;
+
         public ItemType itemType;
         public Rarity itemRarity;
 

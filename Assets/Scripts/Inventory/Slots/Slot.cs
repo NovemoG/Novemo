@@ -3,6 +3,7 @@ using Core;
 using Items;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Inventory.Slots
 {
@@ -12,11 +13,14 @@ namespace Inventory.Slots
         public SlotGroup slotGroup;
         public Coordinates2D slotCoordinates;
 
-        public bool IsEmpty => items.Count == 0;
-
         protected List<Item> items;
+        
+        public bool IsEmpty => PeekItem is null;
+        public bool IsFull => PeekItem.stackLimit == items.Count;
+        public bool IsInGroup => slotGroup.Slots is not null;
         public Item PeekItem => !IsEmpty ? items[0] : null;
 
+        public Image slotIcon;
         public TextMeshProUGUI stackText;
         
         private void Awake()
@@ -29,6 +33,8 @@ namespace Inventory.Slots
             if (PeekItem != item || PeekItem.stackLimit == items.Count) return false;
             
             items.Add(item);
+            slotIcon.enabled = true;
+            slotIcon.sprite = item.itemIcon;
             return true;
         }
 
@@ -50,6 +56,8 @@ namespace Inventory.Slots
             if (IsEmpty)
             {
                 stackText.enabled = false;
+                slotIcon.sprite = null;
+                slotIcon.enabled = false;
             }
             return true;
         }

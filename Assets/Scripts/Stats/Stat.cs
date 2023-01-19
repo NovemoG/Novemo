@@ -28,7 +28,7 @@ namespace Stats
         public string StatName => statName;
         public float BaseValue => baseValue;
         public float GetBonus(string name) => _bonusValues[name];
-        public float Value => baseValue + _bonusValues.Sum(x => x.Value);
+        public float Value => baseValue + _bonusValues?.Sum(x => x.Value) ?? baseValue;
 
         /// <summary>
         /// Adds bonus value to a BonusValues collection. Value by which base should be modified (notation: .value)
