@@ -1,6 +1,6 @@
 using Loot;
 
-namespace Inventory
+namespace Inventories
 {
 	public class LootChest : Inventory
 	{

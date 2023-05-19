@@ -1,15 +1,15 @@
 using System.Collections.Generic;
-using Core;
-using Inventory.Slots;
+using Inventories.Slots;
 using Items;
 using Managers;
 using UnityEngine;
+using UnityEngine.UI;
 
-namespace Inventory
+namespace Inventories
 {
     public class Inventory : MonoBehaviour
     {
-        private InventoryManager _inventoryManager;
+        protected InventoryManager InventoryManager;
 
         public Item one;
         public Item two;
@@ -23,33 +23,18 @@ namespace Inventory
 
         protected virtual void Awake()
         {
-            _inventoryManager = GameManager.Instance.InventoryManager;
+            InventoryManager = GameManager.Instance.InventoryManager;
 
-            AllSlots = new Slot[rows,cols];
+            AllSlots = InventoryManager.CreateInventory(transform, rows, cols);
             UsedSlots = new List<SlotGroup>();
-
-            for (int i = 0; i < rows; i++)
-            {
-                for (int j = 0; j < cols; j++)
-                {
-                    var slot = Instantiate(_inventoryManager.slotObject, transform, true);
-                    var slotClass = slot.GetComponent<Slot>();
-                    
-                    slot.gameObject.name = $"Slot";
-                    slotClass.slotCoordinates = new Coordinates2D(i, j);
-
-                    AllSlots[i, j] = slotClass;
-                    freeSlots++;
-                }
-            }
-        }
-
-        private void Start()
-        {
+            freeSlots = AllSlots.Length;
             
+            var inventoryRect = GetComponent<RectTransform>();
+            var cellSize = GetComponent<GridLayoutGroup>().cellSize;
+            inventoryRect.sizeDelta = new Vector2(cols * cellSize.x + cols - 1 + 20, rows * cellSize.y + rows - 1 + 20);
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             if (Input.GetKeyDown(KeyCode.I))
             {
@@ -64,27 +49,29 @@ namespace Inventory
                 AddItem(onetwo);
             }
         }
+        
+        public bool RemoveItem(int xSlotPosition, int ySlotPosition) => AllSlots[xSlotPosition, ySlotPosition].RemoveItem();
 
-        public bool AddItem(Item item)
+        public bool AddItem(Item item, int slotX = 0, int slotY = 0)
         {
             if (freeSlots == 0) return false;
-            
-            for (int i = 0; i < UsedSlots.Count; i++)
-            {
-                var slot = UsedSlots[i].PivotSlot;
 
-                if (slot.AddItem(item)) return true;
+            if (slotX != 0 || slotY != 0)
+            {
+                foreach (var slot in UsedSlots)
+                {
+                    //TODO doesnt add items
+                    if (slot.AddItem(item)) return true;
+                }
             }
 
-            for (int i = 0; i < rows; i += item.sizeRows)
+            for (int i = slotX; i < rows; i++)
             {
                 if (i + item.sizeRows > rows) break;
                 
-                for (int j = 0; j < cols; j += item.sizeCols)
+                for (int j = slotY; j < cols; j++)
                 {
                     if (j + item.sizeCols > cols) break;
-                    
-                    Debug.Log($"{i}, {j}");
 
                     if (TryCreatingGroup(item, i, j)) return true;
                 }
@@ -92,11 +79,21 @@ namespace Inventory
 
             return false;
         }
+        
+        public List<Item> AddItems(List<Item> items, int slotX = 0, int slotY = 0)
+        {
+            while (items.Count > 0 && AddItem(items[0], slotX, slotY))
+            {
+                items.RemoveAt(0);
+            }
+
+            return items;
+        }
 
         public bool TryCreatingGroup(Item item, int startX, int startY)
         {
             var slots = new List<Slot>();
-            
+
             for (int i = 0; i < item.sizeRows; i++)
             {
                 for (int j = 0; j < item.sizeCols; j++)
@@ -108,7 +105,7 @@ namespace Inventory
                 }
             }
             
-            var group = new SlotGroup(slots);
+            var group = new SlotGroup(slots, this);
             freeSlots -= slots.Count;
             group.AddItem(item);
             UsedSlots.Add(group);

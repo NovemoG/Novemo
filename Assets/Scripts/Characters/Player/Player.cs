@@ -6,12 +6,12 @@ namespace Characters.Player
 	public class Player : Character
 	{
 		/// <summary>
-		/// Gives information about picked up item
+		/// Gives information about item added to inventory
 		/// </summary>
-		public event Action<Item> ItemPickedUp;
-		public void InvokeItemPickedUp(Item item)
+		public event Action<Item> ItemCollected;
+		public void InvokeItemCollected(Item item)
 		{
-			ItemPickedUp?.Invoke(item);
+			ItemCollected?.Invoke(item);
 		}
 	}
 }

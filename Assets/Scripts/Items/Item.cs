@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Enums;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Items
 {
@@ -14,6 +15,7 @@ namespace Items
         //public GeneratedImage itemIcon;
 
         public ItemType itemType;
+        [FormerlySerializedAs("equipSlot")] public EquipSlotType equipSlotType;
         public Rarity itemRarity;
 
         public int stackLimit;

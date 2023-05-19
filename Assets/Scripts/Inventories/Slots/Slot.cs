@@ -5,42 +5,44 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Inventory.Slots
+namespace Inventories.Slots
 {
     public class Slot : MonoBehaviour
     {
         //group in which this slot is allocated if there is an item bigger than 1x1
-        public SlotGroup slotGroup;
-        public Coordinates2D slotCoordinates;
+        public SlotGroup SlotGroup;
+        public Coordinates2D SlotCoordinates;
 
-        protected List<Item> items;
+        public List<Item> Items { get; private set; }
         
-        public bool IsEmpty => PeekItem is null;
-        public bool IsFull => PeekItem.stackLimit == items.Count;
-        public bool IsInGroup => slotGroup.Slots is not null;
-        public Item PeekItem => !IsEmpty ? items[0] : null;
+        public bool IsEmpty => Items.Count == 0;
+        public bool IsFull => !IsEmpty && Items[0].stackLimit == Items.Count;
+        public bool IsInGroup => SlotGroup.Slots is not null && SlotGroup.Slots.Count != 0;
 
         public Image slotIcon;
         public TextMeshProUGUI stackText;
+        public GameObject backgroundObject;
         
         private void Awake()
         {
-            items = new List<Item>();
+            Items = new List<Item>();
         }
 
         public bool AddItem(Item item)
         {
-            if (PeekItem != item || PeekItem.stackLimit == items.Count) return false;
-            
-            items.Add(item);
-            slotIcon.enabled = true;
-            slotIcon.sprite = item.itemIcon;
-            return true;
+            if ((IsEmpty || Items[0] == item) && !IsFull)
+            {
+                Items.Add(item);
+                return true;
+            }
+
+            return false;
+
         }
 
         public List<Item> AddItems(List<Item> itemsAdded)
         {
-            while (AddItem(items[0]))
+            while (itemsAdded.Count > 0 && AddItem(itemsAdded[0]))
             {
                 itemsAdded.RemoveAt(0);
             }
@@ -52,13 +54,7 @@ namespace Inventory.Slots
         {
             if (IsEmpty) return false;
             
-            items.RemoveAt(0);
-            if (IsEmpty)
-            {
-                stackText.enabled = false;
-                slotIcon.sprite = null;
-                slotIcon.enabled = false;
-            }
+            Items.RemoveAt(0);
             return true;
         }
 
