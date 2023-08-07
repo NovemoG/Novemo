@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Enums;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Items
 {
@@ -15,12 +14,14 @@ namespace Items
         //public GeneratedImage itemIcon;
 
         public ItemType itemType;
-        [FormerlySerializedAs("equipSlot")] public EquipSlotType equipSlotType;
+        public EquipSlotType equipSlotType;
         public Rarity itemRarity;
 
         public int stackLimit;
         public int sizeRows;
         public int sizeCols;
+
+        public bool usable;
         
         public List<Tag> itemTags;
 
@@ -30,11 +31,16 @@ namespace Items
         
         public virtual int ReferenceId => itemName.Length + itemDescription.Length + (int)itemRarity + (int)itemType + stackLimit;
 
+        public virtual void Use()
+        {
+            
+        }
+        
         #region Equality override
 
         public static bool operator == (Item item1, Item item2)
         {
-            return item1!.Equals(item2);
+            return !ReferenceEquals(null, item1) && item1.Equals(item2);
         }
 
         public static bool operator != (Item item1, Item item2)

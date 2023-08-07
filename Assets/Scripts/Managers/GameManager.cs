@@ -18,6 +18,8 @@ namespace Managers
 		public UIManager UIManager { get; private set; }
 		public AudioManager AudioManager { get; private set; }
 
+		public Camera mainCamera;
+
 		private void Awake()
 		{
 			if (Instance != null && Instance != this)

@@ -2,8 +2,10 @@ using UnityEngine;
 
 namespace Managers
 {
-	public partial class UIManager : MonoBehaviour
+	public class UIManager : MonoBehaviour
 	{
-		//Tweening
+		public Color[] indicatorColors;
+
+		//TODO Tweening (apparently with coroutines)
 	}
 }

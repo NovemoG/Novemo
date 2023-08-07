@@ -1,6 +1,6 @@
-using Core;
 using Inventories;
 using Inventories.Slots;
+using Items;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,72 +8,50 @@ namespace Managers
 {
     public class InventoryManager : MonoBehaviour
     {
-        public GameObject slotObject;
-
-        [SerializeField] public HoverSlot HoverSlot;
+        public GameObject movingSlot;
         
+        public Inventory playerInventory;
+        public ToggleGroup inventoryToggleGroup;
+
+        private Slot _selected;
+
+        public Item red;
+        public Item yellow;
+        public Item green;
+
+        public void InitiateItemSwap()
+        {
+            
+        }
+
+        public void SwapItems(Slot clicked)
+        {
+            
+        }
+
         private void Update()
         {
-            if (HoverSlot.background.activeSelf)
+            if (Input.GetAxisRaw("Mouse ScrollWheel") > 0)
             {
-                var mousePos = Input.mousePosition;
-
-                HoverSlot.transform.position = new Vector2(mousePos.x, mousePos.y);
+                //select next
             }
-        }
-
-        public Slot[,] CreateInventory(Transform inventoryTransform, int rows, int cols)
-        {
-            var slots = new Slot[rows, cols];
-            
-            for (int i = 0; i < rows; i++)
+            else if (Input.GetAxisRaw("Mouse ScrollWheel") < 0)
             {
-                for (int j = 0; j < cols; j++)
-                {
-                    var slot = Instantiate(slotObject, inventoryTransform, true);
-                    var slotClass = slot.GetComponent<Slot>();
-                    
-                    slot.gameObject.name = "Slot";
-                    slot.GetComponent<Button>().onClick.AddListener(delegate { MoveItems(slotClass, inventoryTransform.GetComponent<Inventory>()); });
-
-                    slotClass.SlotCoordinates = new Coordinates2D(i, j);
-
-                    slots[i, j] = slotClass;
-                }
+                //select previous
             }
 
-            return slots;
-        }
-        
-        public void MoveItems(Slot clickedSlot, Inventory slotInventory)
-        {
-            var hoverSlot = HoverSlot.slotClass;
-            
-            if (!hoverSlot.IsEmpty && !clickedSlot.IsFull)
+            if (Input.GetKeyDown(KeyCode.I))
             {
-                var result = slotInventory.AddItems(hoverSlot.Items, clickedSlot.SlotCoordinates.X, clickedSlot.SlotCoordinates.Y);
-                
-                hoverSlot.RemoveItems(hoverSlot.Items.Count - result.Count);
+                playerInventory.AddItem(red);
             }
-            else if (!clickedSlot.IsEmpty && !hoverSlot.IsFull)
+            if (Input.GetKeyDown(KeyCode.O))
             {
-                var pivotSlot = clickedSlot.SlotGroup.PivotSlot;
-                var item = pivotSlot.Items[0];
-                
-                var result = hoverSlot.AddItems(pivotSlot.Items);
-                HoverSlot.rect.sizeDelta = new Vector2(item.sizeCols * Metrics.SlotSize.y, item.sizeRows * Metrics.SlotSize.x);
-                HoverSlot.text.text = HoverSlot.slotClass.Items.Count.ToString();
-                HoverSlot.icon.sprite = item.itemIcon;
-                
-                //TODO doesnt place items
-
-                clickedSlot.SlotGroup.RemoveItems(pivotSlot.Items.Count - result.Count);
+                playerInventory.AddItem(yellow);
             }
-
-            var setActive = hoverSlot.Items.Count != 0;
-            HoverSlot.background.SetActive(setActive);
-            HoverSlot.icon.gameObject.SetActive(setActive);
-            HoverSlot.text.gameObject.SetActive(setActive);
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                playerInventory.AddItem(green);
+            }
         }
     }
 }

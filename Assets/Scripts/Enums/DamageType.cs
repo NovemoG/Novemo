@@ -2,8 +2,10 @@ namespace Enums
 {
 	public enum DamageType
 	{
-		Physical,
-		Magical,
-		Lethal
+		Physical = 0,
+		Magical = 1,
+		Lethal = 2,
+		Heal = 3,
+		Mana = 4,
 	}
 }

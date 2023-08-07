@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Core;
 using Items;
+using Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,63 +9,74 @@ namespace Inventories.Slots
 {
     public class Slot : MonoBehaviour
     {
-        //group in which this slot is allocated if there is an item bigger than 1x1
-        public SlotGroup SlotGroup;
-        public Coordinates2D SlotCoordinates;
+        private List<Item> _items;
 
-        public List<Item> Items { get; private set; }
+        public Item Peek => !IsEmpty ? _items[0] : null;
         
-        public bool IsEmpty => Items.Count == 0;
-        public bool IsFull => !IsEmpty && Items[0].stackLimit == Items.Count;
-        public bool IsInGroup => SlotGroup.Slots is not null && SlotGroup.Slots.Count != 0;
+        public int Count => _items.Count;
+        
+        public bool IsEmpty => Count == 0;
+        public bool IsFull => !IsEmpty && _items[0].stackLimit == Count;
 
         public Image slotIcon;
         public TextMeshProUGUI stackText;
-        public GameObject backgroundObject;
         
+        public GameObject borderObject;
+        public GameObject backgroundObject;
+
         private void Awake()
         {
-            Items = new List<Item>();
+            _items = new List<Item>();
+            GetComponent<Toggle>().group = GameManager.Instance.InventoryManager.inventoryToggleGroup;
         }
 
         public bool AddItem(Item item)
         {
-            if ((IsEmpty || Items[0] == item) && !IsFull)
+            if (IsFull) return false;
+            
+            if (IsEmpty || Peek == item)
             {
-                Items.Add(item);
-                return true;
+                _items.Add(item);
             }
 
-            return false;
-
-        }
-
-        public List<Item> AddItems(List<Item> itemsAdded)
-        {
-            while (itemsAdded.Count > 0 && AddItem(itemsAdded[0]))
+            if (Count == 1)
             {
-                itemsAdded.RemoveAt(0);
+                slotIcon.gameObject.SetActive(true);
+                slotIcon.sprite = item.itemIcon;
             }
             
-            return itemsAdded;
+            stackText.text = Count > 1 ? "" : Count.ToString();
+
+            return true;
         }
 
         public bool RemoveItem()
         {
             if (IsEmpty) return false;
             
-            Items.RemoveAt(0);
+            _items.RemoveAt(0);
+
+            if (IsEmpty)
+            {
+                slotIcon.gameObject.SetActive(false);
+            }
+            
+            stackText.text = Count <= 1 ? "" : Count.ToString();
+            
             return true;
         }
 
-        public int RemoveItems(int count)
+        public bool UseItem()
         {
-            while (RemoveItem())
-            {
-                count--;
-            }
+            if (IsEmpty || !Peek.usable) return false;
+            
+            //Peek.Use();
+            return true;
+        }
 
-            return count;
+        public void ToggleBorder()
+        {
+            borderObject.SetActive(!borderObject.activeSelf);
         }
     }
 }
