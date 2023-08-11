@@ -14,7 +14,7 @@ namespace Characters
 {
     [RequireComponent(typeof(StatusEffectController))]
     [RequireComponent(typeof(DisplayDamage))]
-    public class Character : MonoBehaviour, IAttack, IDamageable
+    public class Character : MonoBehaviour, IDamageable
     {
         #region Stats
 

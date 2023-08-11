@@ -16,10 +16,15 @@ MonoBehaviour:
   itemDescription: oneone
   itemIcon: {fileID: 21300000, guid: 0b3e2a96cd1e24d43864db83fc79db43, type: 3}
   itemType: 1
+  equipSlotType: 0
   itemRarity: 1
   stackLimit: 3
   sizeRows: 1
   sizeCols: 1
+  usable: 0
+  reusable: 0
+  useCount: 0
+  useCooldown: 0
   itemTags: []
   sellCost: 0
   buyCost: 0

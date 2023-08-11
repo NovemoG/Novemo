@@ -2319,7 +2319,7 @@ MonoBehaviour:
   playerInventory: {fileID: 258737554}
   inventoryToggleGroup: {fileID: 1663423907}
   red: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
-  yellow: {fileID: 11400000, guid: 9a83ebcc05fef4828ae2da71de62532c, type: 2}
+  yellow: {fileID: 11400000, guid: acd9e30e2a879414eab4adc5753bfb66, type: 2}
   green: {fileID: 11400000, guid: e5250a8c2013f43dab00829ecbd02584, type: 2}
 --- !u!114 &1663423907
 MonoBehaviour:

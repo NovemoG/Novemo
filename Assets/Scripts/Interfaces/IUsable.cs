@@ -2,6 +2,9 @@ namespace Interfaces
 {
     public interface IUsable
     {
-        public void Use() {}
+        public bool Use()
+        {
+            return false;
+        }
     }
 }

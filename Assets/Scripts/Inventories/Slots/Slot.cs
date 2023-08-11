@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Interfaces;
 using Items;
 using Managers;
 using TMPro;
@@ -63,14 +64,6 @@ namespace Inventories.Slots
             
             stackText.text = Count <= 1 ? "" : Count.ToString();
             
-            return true;
-        }
-
-        public bool UseItem()
-        {
-            if (IsEmpty || !Peek.usable) return false;
-            
-            //Peek.Use();
             return true;
         }
 

@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Enums;
+using Interfaces;
 using UnityEngine;
 
 namespace Items
 {
     [CreateAssetMenu(fileName = "New Item", menuName = "Items/Item", order = 1)]
-    public class Item : ScriptableObject
+    public class Item : ScriptableObject, IUsable
     {
         public string itemName;
         public string itemDescription;
@@ -14,15 +15,10 @@ namespace Items
         //public GeneratedImage itemIcon;
 
         public ItemType itemType;
-        public EquipSlotType equipSlotType;
         public Rarity itemRarity;
 
         public int stackLimit;
-        public int sizeRows;
-        public int sizeCols;
 
-        public bool usable;
-        
         public List<Tag> itemTags;
 
         //TODO calculate cost dynamically
@@ -31,11 +27,11 @@ namespace Items
         
         public virtual int ReferenceId => itemName.Length + itemDescription.Length + (int)itemRarity + (int)itemType + stackLimit;
 
-        public virtual void Use()
+        public virtual bool Use()
         {
-            
+            return false;
         }
-        
+
         #region Equality override
 
         public static bool operator == (Item item1, Item item2)
@@ -50,10 +46,13 @@ namespace Items
 
         protected virtual bool Equals(Item other)
         {
+            //TODO null reference there
             var equalTags = true;
             for (var i = 0; i < itemTags.Count; i++)
             {
                 equalTags = other.itemTags[i] == itemTags[i];
+
+                if (!equalTags) break;
             }
             
             return base.Equals(other) && ReferenceId == other.ReferenceId && equalTags;

@@ -1,4 +1,6 @@
 using System;
+using Enums;
+using Interfaces;
 using Inventories;
 using Items;
 using Managers;
@@ -7,7 +9,7 @@ using UnityEngine;
 
 namespace Characters.Player
 {
-	public class Player : Character
+	public class Player : Character, IAttack
 	{
 		public TextMeshProUGUI levelText;
 
@@ -49,55 +51,72 @@ namespace Characters.Player
 				//TODO check key binds instead of keys
 				if (Input.GetKeyDown(KeyCode.Alpha1))
 				{
-					//_inventory.AllSlots[0].Items[0].Use();
+					_inventory.AllSlots[0].Peek.Use();
 				}
+
 				if (Input.GetKeyDown(KeyCode.Alpha2))
 				{
-					//_inventory.AllSlots[1].Items[1].Use();
+					_inventory.AllSlots[1].Peek.Use();
 				}
+
 				if (Input.GetKeyDown(KeyCode.Alpha3))
 				{
-					//_inventory.AllSlots[2].Items[2].Use();
+					_inventory.AllSlots[2].Peek.Use();
 				}
+
 				if (Input.GetKeyDown(KeyCode.Alpha4))
 				{
-					//_inventory.AllSlots[3].Items[3].Use();
+					_inventory.AllSlots[3].Peek.Use();
 				}
+
 				if (Input.GetKeyDown(KeyCode.Alpha5))
 				{
-					//_inventory.AllSlots[4].Items[4].Use();
+					_inventory.AllSlots[4].Peek.Use();
 				}
+
 				if (Input.GetKeyDown(KeyCode.Alpha6))
 				{
-					//_inventory.AllSlots[5].Items[5].Use();
+					_inventory.AllSlots[5].Peek.Use();
 				}
+
 				if (Input.GetKeyDown(KeyCode.Alpha7))
 				{
-					//_inventory.AllSlots[6].Items[6].Use();
+					_inventory.AllSlots[6].Peek.Use();
 				}
+
 				if (Input.GetKeyDown(KeyCode.Alpha8))
 				{
-					//_inventory.AllSlots[7].Items[7].Use();
+					_inventory.AllSlots[7].Peek.Use();
 				}
+
 				if (Input.GetKeyDown(KeyCode.Alpha9))
 				{
-					//_inventory.AllSlots[8].Items[8].Use();
+					_inventory.AllSlots[8].Peek.Use();
 				}
+
 				if (Input.GetKeyDown(KeyCode.Alpha0))
 				{
-					//_inventory.AllSlots[9].Items[9].Use();
+					_inventory.AllSlots[9].Peek.Use();
 				}
+
 				if (Input.GetKeyDown(KeyCode.Minus))
 				{
-					//_inventory.AllSlots[10].Items[10].Use();
+					_inventory.AllSlots[10].Peek.Use();
 				}
+
 				if (Input.GetKeyDown(KeyCode.Equals))
 				{
-					//_inventory.AllSlots[11].Items[11].Use();
+					//TODO static classes for item uses
+					_inventory.AllSlots[11].Peek.Use();
 				}
 			}
 		}
 
+		public void Attack(Character target)
+		{
+			target.TakeDamage(this, DamageType.Magical, 1, false);
+		}
+		
 		private void UpdateLevelText(Character target, int lvl)
 		{
 			levelText.text = lvl.ToString();
