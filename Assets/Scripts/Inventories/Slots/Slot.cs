@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Interfaces;
 using Items;
 using Managers;
 using TMPro;
@@ -10,14 +9,12 @@ namespace Inventories.Slots
 {
     public class Slot : MonoBehaviour
     {
-        private List<Item> _items;
-
         public Item Peek => !IsEmpty ? _items[0] : null;
         
-        public int Count => _items.Count;
+        public int ItemCount => _items.Count;
         
-        public bool IsEmpty => Count == 0;
-        public bool IsFull => !IsEmpty && _items[0].stackLimit == Count;
+        public bool IsEmpty => ItemCount == 0;
+        public bool IsFull => !IsEmpty && _items[0].stackLimit == ItemCount;
 
         public Image slotIcon;
         public TextMeshProUGUI stackText;
@@ -25,28 +22,39 @@ namespace Inventories.Slots
         public GameObject borderObject;
         public GameObject backgroundObject;
 
+        private Toggle _toggleComponent;
+        
+        private List<Item> _items;
+
         private void Awake()
         {
             _items = new List<Item>();
-            GetComponent<Toggle>().group = GameManager.Instance.InventoryManager.inventoryToggleGroup;
+            _toggleComponent = GetComponent<Toggle>();
+            _toggleComponent.group = GameManager.Instance.InventoryManager.inventoryToggleGroup;
         }
 
         public bool AddItem(Item item)
         {
             if (IsFull) return false;
-            
-            if (IsEmpty || Peek == item)
+
+            if (!IsEmpty && Peek != item)
             {
-                _items.Add(item);
+                return false;
             }
 
-            if (Count == 1)
+            _items.Add(item);
+
+            if (ItemCount == 1)
             {
                 slotIcon.gameObject.SetActive(true);
                 slotIcon.sprite = item.itemIcon;
             }
-            
-            stackText.text = Count > 1 ? "" : Count.ToString();
+
+            if (ItemCount > 1)
+            {
+                stackText.gameObject.SetActive(true);
+                stackText.text = ItemCount.ToString();
+            }
 
             return true;
         }
@@ -62,14 +70,29 @@ namespace Inventories.Slots
                 slotIcon.gameObject.SetActive(false);
             }
             
-            stackText.text = Count <= 1 ? "" : Count.ToString();
+            stackText.text = ItemCount.ToString();
+            
+            if (ItemCount <= 1)
+            {
+                stackText.gameObject.SetActive(false);
+            }
             
             return true;
         }
 
+        /// <summary>
+        /// Removes all items from given slot
+        /// </summary>
+        public void ClearSlot()
+        {
+            _items.Clear();
+            stackText.text = "";
+            stackText.gameObject.SetActive(true);
+        }
+
         public void ToggleBorder()
         {
-            borderObject.SetActive(!borderObject.activeSelf);
+            borderObject.SetActive(_toggleComponent.isOn);
         }
     }
 }

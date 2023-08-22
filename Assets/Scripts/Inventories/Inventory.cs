@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Core;
 using Inventories.Slots;
 using Items;
 using Managers;
@@ -11,8 +12,11 @@ namespace Inventories
     public class Inventory : MonoBehaviour
     {
         private InventoryManager _inventoryManager;
+
+        public GameObject inventoryBackground;
+        public int rows, cols, slotCount;
         
-        public int freeSlots = 13;
+        public int freeSlots;
         
         [NonSerialized]
         public List<Slot> AllSlots;
@@ -21,20 +25,19 @@ namespace Inventories
         {
             _inventoryManager = GameManager.Instance.InventoryManager;
             AllSlots = new List<Slot>();
+
+            for (int i = 0; i < slotCount; i++)
+            {
+                var instance = Instantiate(_inventoryManager.slotPrefab, transform);
+
+                AddSlot(instance);
+            }
         }
 
         protected void Start()
         {
-            int i = 0;
-            foreach (Transform child in transform)
-            {
-                AllSlots.Add(child.GetComponent<Slot>());
-
-                if (AllSlots[i].IsEmpty) freeSlots++;
-
-                i++;
-            }
-
+            //TODO load items from save file
+            
             //TODO after save is loaded change '0' to last selected slot
             AllSlots[0].GetComponent<Toggle>().isOn = true;
         }
@@ -50,8 +53,12 @@ namespace Inventories
         /// <returns>A boolean value that represents whether the operation was successful</returns>
         public bool AddItem(Item item)
         {
+            if (freeSlots == 0) return false;
+            
             foreach (var slot in AllSlots)
             {
+                if (slot.IsEmpty) freeSlots--;
+                
                 if (slot.AddItem(item)) return true;
             }
 
@@ -73,7 +80,11 @@ namespace Inventories
         /// <returns>A boolean value that represents whether the operation was successful</returns>
         public bool RemoveItem(int slotId)
         {
-            return AllSlots[slotId].RemoveItem();
+            var wasRemoved = AllSlots[slotId].RemoveItem();
+
+            if (AllSlots[slotId].IsEmpty) freeSlots++;
+            
+            return wasRemoved;
         }
 
         /// <summary>
@@ -87,10 +98,27 @@ namespace Inventories
                 if (slot.Peek != item) continue;
                 
                 slot.RemoveItem();
+
+                if (slot.IsEmpty) freeSlots++;
+                
                 return true;
             }
 
             return false;
+        }
+
+        public void AddSlot(GameObject slotInstance)
+        {
+            AllSlots.Add(slotInstance.GetComponent<Slot>());
+            
+            var backgroundRect = inventoryBackground.GetComponent<RectTransform>();
+            
+            var height = (rows + 3) * 7 + Metrics.SlotSize.y * rows;
+            var width = (cols + 3) * 7 + Metrics.SlotSize.x * cols;
+            
+            backgroundRect.sizeDelta = new Vector2( width, height);
+            
+            freeSlots++;
         }
     }
 }

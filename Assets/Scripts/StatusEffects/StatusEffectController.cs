@@ -5,11 +5,11 @@ namespace StatusEffects
 {
 	public class StatusEffectController : MonoBehaviour
 	{
-		public List<StatusEffect> Effects;
+		private List<StatusEffect> _effects;
 
 		private void Awake()
 		{
-			Effects = new List<StatusEffect>();
+			_effects = new List<StatusEffect>();
 		}
 
 		private void FixedUpdate()
@@ -19,26 +19,26 @@ namespace StatusEffects
 
 		public bool ApplyEffect(StatusEffect effect)
 		{
-			for (int i = 0; i < Effects.Count; i++)
+			for (int i = 0; i < _effects.Count; i++)
 			{
-				if (Effects[i].EffectName == effect.EffectName && !effect.CanStack)
+				if (_effects[i].EffectName == effect.EffectName && !effect.CanStack)
 				{
 					return false;
 				}
 			}
 
 			effect.Id = GenerateUniqueId();
-			Effects.Add(effect);
+			_effects.Add(effect);
 			return true;
 		}
 
 		public void RemoveEffect(int id)
 		{
-			for (int i = 0; i < Effects.Count; i++)
+			for (int i = 0; i < _effects.Count; i++)
 			{
-				if (Effects[i].Id == id)
+				if (_effects[i].Id == id)
 				{
-					Effects.RemoveAt(i);
+					_effects.RemoveAt(i);
 					return;
 				}
 			}
@@ -46,9 +46,9 @@ namespace StatusEffects
 
 		private void EveryTick()
 		{
-			for (int i = 0; i < Effects.Count; i++)
+			for (int i = 0; i < _effects.Count; i++)
 			{
-				Effects[i].Tick();
+				_effects[i].Tick();
 			}
 		}
 
@@ -56,9 +56,9 @@ namespace StatusEffects
 		{
 			var id = Random.Range(0, short.MaxValue);
 			
-			for (int i = 0; i < Effects.Count; i++)
+			for (int i = 0; i < _effects.Count; i++)
 			{
-				if (Effects[i].Id != id) continue;
+				if (_effects[i].Id != id) continue;
 				
 				id = Random.Range(0, short.MaxValue);
 				i = 0;

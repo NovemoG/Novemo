@@ -24,8 +24,8 @@ namespace Items
         //TODO calculate cost dynamically
         public int sellCost;
         public int buyCost;
-        
-        public virtual int ReferenceId => itemName.Length + itemDescription.Length + (int)itemRarity + (int)itemType + stackLimit;
+
+        protected virtual int ReferenceId => itemName.Length + itemDescription.Length + (int)itemRarity + (int)itemType + stackLimit;
 
         public virtual bool Use()
         {
@@ -46,21 +46,21 @@ namespace Items
 
         protected virtual bool Equals(Item other)
         {
-            //TODO null reference there
             var equalTags = true;
+            
             for (var i = 0; i < itemTags.Count; i++)
             {
                 equalTags = other.itemTags[i] == itemTags[i];
-
+                
                 if (!equalTags) break;
             }
-            
+                        
             return base.Equals(other) && ReferenceId == other.ReferenceId && equalTags;
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
+            //if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             return obj.GetType() == this.GetType() && Equals((Item)obj);
         }

@@ -24,10 +24,17 @@ namespace StatusEffects
 		{
 			if (TickCount == 0)
 			{
+				EffectEnd();
+				
 				Character.EffectsController.RemoveEffect(Id);
 			}
 			
 			TickCount -= 1;
+		}
+
+		public virtual void EffectEnd()
+		{
+			
 		}
 	}
 }

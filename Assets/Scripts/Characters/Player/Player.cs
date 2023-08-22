@@ -22,6 +22,8 @@ namespace Characters.Player
 		public void InvokeItemCollected(Item item)
 		{
 			ItemCollected?.Invoke(item);
+			
+			//TODO if cant fit in inventory display little popup that asks if player wants to add collected item to vault
 		}
 
 		protected override void Awake()

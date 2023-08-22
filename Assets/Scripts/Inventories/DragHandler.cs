@@ -1,4 +1,3 @@
-using System;
 using Inventories.Slots;
 using Managers;
 using UnityEngine;
@@ -6,7 +5,7 @@ using UnityEngine.EventSystems;
 
 namespace Inventories
 {
-    public class DragHandler : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IInitializePotentialDragHandler
+    public class DragHandler : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler/*, IInitializePotentialDragHandler*/
     {
         private GameObject _movingObject;
         private Slot _movingSlot;
@@ -21,21 +20,15 @@ namespace Inventories
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            Debug.Log("test");
-            
             foreach (var current in eventData.hovered)
             {
                 if (current.name != "Slot") continue;
 
                 _selected = current.GetComponent<Slot>();
-                
-                Debug.Log("slot selected");
 
-                for (int i = 0; i < _selected.Count; i++)
+                for (int i = 0; i < _selected.ItemCount; i++)
                 {
                     var wasAdded = _movingSlot.AddItem(_selected.Peek);
-                    
-                    Debug.Log($"{wasAdded} adding items");
                     
                     if (!wasAdded) return;
                     
@@ -43,7 +36,12 @@ namespace Inventories
                 }
             }
         }
-
+        
+        public void OnDrag(PointerEventData eventData)
+        {
+            _movingObject.transform.position = Input.mousePosition;
+        }
+        
         public void OnEndDrag(PointerEventData eventData)
         {
             foreach (var current in eventData.hovered)
@@ -51,15 +49,31 @@ namespace Inventories
                 if (current.name != "Slot") continue;
                 if (current == _selected.gameObject) break;
 
+                var selected = current.GetComponent<Slot>();
                 
+                for (int i = 0; i < _movingSlot.ItemCount; i++)
+                {
+                    var wasAdded = selected.AddItem(_movingSlot.Peek);
+                    
+                    Debug.Log($"{wasAdded} adding static items");
+                    
+                    if (!wasAdded) break;
+                    
+                    _movingObject.SetActive(true);
+                }
             }
+
+            //drop items
             
-            //remove items from moving slot and deselect
+            _selected = null;
+            
+            _movingSlot.ClearSlot();
+            _movingObject.SetActive(false);
         }
 
-        public void OnInitializePotentialDrag(PointerEventData eventData)
+        /*public void OnInitializePotentialDrag(PointerEventData eventData)
         {
             eventData.useDragThreshold = false;
-        }
+        }*/
     }
 }

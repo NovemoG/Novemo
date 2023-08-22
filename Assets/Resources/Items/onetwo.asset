@@ -18,8 +18,6 @@ MonoBehaviour:
   itemType: 1
   itemRarity: 4
   stackLimit: 2
-  sizeRows: 1
-  sizeCols: 2
   itemTags: []
   sellCost: 0
   buyCost: 0

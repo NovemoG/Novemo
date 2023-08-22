@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Inventories;
 using Inventories.Slots;
 using Items;
@@ -8,6 +9,7 @@ namespace Managers
 {
     public class InventoryManager : MonoBehaviour
     {
+        public GameObject slotPrefab;
         public GameObject movingSlot;
         
         public Inventory playerInventory;
@@ -19,14 +21,11 @@ namespace Managers
         public Item yellow;
         public Item green;
 
-        public void InitiateItemSwap()
+        private void Start()
         {
+            movingSlot.SetActive(false);
             
-        }
-
-        public void SwapItems(Slot clicked)
-        {
-            
+            //TODO on vault closed change selected to first inventory slot
         }
 
         private void Update()
@@ -40,18 +39,43 @@ namespace Managers
                 //select previous
             }
 
-            if (Input.GetKeyDown(KeyCode.I))
+            if (Input.anyKeyDown)
             {
-                playerInventory.AddItem(red);
+                if (Input.GetKeyDown(KeyCode.I))
+                {
+                    playerInventory.AddItem(red);
+                }
+                if (Input.GetKeyDown(KeyCode.O))
+                {
+                    playerInventory.AddItem(yellow);
+                }
+                if (Input.GetKeyDown(KeyCode.P))
+                {
+                    playerInventory.AddItem(green);
+                }
+
+                if (Input.GetKeyDown(KeyCode.V))
+                {
+                    
+                }
             }
-            if (Input.GetKeyDown(KeyCode.O))
-            {
-                playerInventory.AddItem(yellow);
-            }
-            if (Input.GetKeyDown(KeyCode.P))
-            {
-                playerInventory.AddItem(green);
-            }
+        }
+
+        public void OpenVault()
+        {
+            
+        }
+
+        public void CloseVault()
+        {
+            
+            
+            //TODO if moving slot has items from vault try to add them back, if its not possible drop them
+        }
+
+        public void DropItems(Transform characterTransform, List<Item> items)
+        {
+            
         }
     }
 }
