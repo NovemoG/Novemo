@@ -26,11 +26,11 @@ namespace Inventories
             _inventoryManager = GameManager.Instance.InventoryManager;
             AllSlots = new List<Slot>();
 
-            for (int i = 0; i < slotCount; i++)
+            foreach (Transform child in transform)
             {
-                var instance = Instantiate(_inventoryManager.slotPrefab, transform);
+                AllSlots.Add(child.GetComponent<Slot>());
 
-                AddSlot(instance);
+                freeSlots++;
             }
         }
 
@@ -38,8 +38,11 @@ namespace Inventories
         {
             //TODO load items from save file
             
-            //TODO after save is loaded change '0' to last selected slot
-            AllSlots[0].GetComponent<Toggle>().isOn = true;
+            //TODO after save is loaded change '0' to last selected slot (in inventory)
+            if (gameObject.name == "Inventory")
+            {
+                AllSlots[0].GetComponent<Toggle>().isOn = true;
+            }
         }
 
         protected virtual void Update()
@@ -50,7 +53,7 @@ namespace Inventories
         /// <summary>
         /// Tries to add one item to inventory
         /// </summary>
-        /// <returns>A boolean value that represents whether the operation was successful</returns>
+        /// <returns>A boolean value that represents whether the provided item was successfully added</returns>
         public bool AddItem(Item item)
         {
             if (freeSlots == 0) return false;
@@ -64,61 +67,94 @@ namespace Inventories
 
             return false;
         }
-        
-        /// <summary>
-        /// Tries to add one item to a given slot id (Note: it will try to add provided item to other slot if possible)
-        /// </summary>
-        /// <returns>A boolean value that represents whether the operation was successful</returns>
-        public bool AddItem(Item item, int slotId)
-        {
-            return AllSlots[slotId].AddItem(item) || AddItem(item);
-        }
-        
-        /// <summary>
-        /// Removes one item from a given slot id
-        /// </summary>
-        /// <returns>A boolean value that represents whether the operation was successful</returns>
-        public bool RemoveItem(int slotId)
-        {
-            var wasRemoved = AllSlots[slotId].RemoveItem();
 
-            if (AllSlots[slotId].IsEmpty) freeSlots++;
+        /// <summary>
+        /// Adds multiple items from provided list to inventory
+        /// </summary>
+        /// <returns>List of items that left which couldn't be added</returns>
+        public List<Item> AddItems(List<Item> items)
+        {
+            items = new List<Item>(items);
             
-            return wasRemoved;
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (!AddItem(items[0])) break;
+                items.RemoveAt(0);
+            }
+
+            return items;
+        }
+        
+        /// <summary>
+        /// Adds provided item to inventory multiple times
+        /// </summary>
+        /// <returns>Number of items that couldn't be added</returns>
+        public int AddItems(Item item, int count)
+        {
+            while (AddItem(item))
+            {
+                count--;
+            }
+
+            return count;
         }
 
         /// <summary>
-        /// Only use it if u want to check for quest items or items that need to be removed to complete some task
+        /// Removes one item from inventory
         /// </summary>
         /// <returns>A boolean value that represents whether the provided item was successfully removed</returns>
         public bool RemoveItem(Item item)
         {
+            bool wasRemoved = false;
+            
             foreach (var slot in AllSlots)
             {
                 if (slot.Peek != item) continue;
                 
-                slot.RemoveItem();
+                wasRemoved = slot.RemoveItem();
 
-                if (slot.IsEmpty) freeSlots++;
-                
-                return true;
+                if (wasRemoved && slot.IsEmpty) freeSlots++;
             }
 
-            return false;
+            return wasRemoved;
         }
 
-        public void AddSlot(GameObject slotInstance)
+        /// <summary>
+        /// Removes multiple items from inventory
+        /// </summary>
+        /// <returns>A boolean value that represents whether function removed items or it is not possible to do so</returns>
+        public int RemoveItems(Item item, int count)
         {
-            AllSlots.Add(slotInstance.GetComponent<Slot>());
+            while (RemoveItem(item))
+            {
+                count--;
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Only works if used on a vault
+        /// </summary>
+        public void AddSlots(int count)
+        {
+            if (gameObject.name != "Vault") return;
+
+            for (int i = 0; i < count; i++)
+            {
+                var instance = Instantiate(_inventoryManager.slotPrefab, transform);
+                
+                AllSlots.Add(instance.GetComponent<Slot>());
+            }
             
             var backgroundRect = inventoryBackground.GetComponent<RectTransform>();
             
-            var height = (rows + 3) * 7 + Metrics.SlotSize.y * rows;
             var width = (cols + 3) * 7 + Metrics.SlotSize.x * cols;
+            var height = (rows + 3) * 7 + Metrics.SlotSize.y * rows;
             
             backgroundRect.sizeDelta = new Vector2( width, height);
-            
-            freeSlots++;
+
+            freeSlots += count;
         }
     }
 }

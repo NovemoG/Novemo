@@ -47,12 +47,15 @@ namespace Items
         protected virtual bool Equals(Item other)
         {
             var equalTags = true;
-            
-            for (var i = 0; i < itemTags.Count; i++)
+
+            if (itemTags != null)
             {
-                equalTags = other.itemTags[i] == itemTags[i];
-                
-                if (!equalTags) break;
+                for (var i = 0; i < itemTags.Count; i++)
+                {
+                    equalTags = other.itemTags[i] == itemTags[i];
+                    
+                    if (!equalTags) break;
+                }
             }
                         
             return base.Equals(other) && ReferenceId == other.ReferenceId && equalTags;

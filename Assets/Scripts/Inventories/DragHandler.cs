@@ -1,21 +1,29 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Inventories.Slots;
+using Items;
 using Managers;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Inventories
 {
     public class DragHandler : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler/*, IInitializePotentialDragHandler*/
     {
+        private InventoryManager _inventoryManager;
+        private Transform _playerTransform;
         private GameObject _movingObject;
+        private Slot _startingSlot;
         private Slot _movingSlot;
-        private Slot _selected;
 
         private void Awake()
         {
-            var inventoryManager = GameManager.Instance.InventoryManager;
-            _movingObject = inventoryManager.movingSlot;
-            _movingSlot = inventoryManager.movingSlot.GetComponent<Slot>();
+            _inventoryManager = GameManager.Instance.InventoryManager;
+            _playerTransform = GameManager.Instance.PlayerManager.playerObject.transform;
+            _movingObject = _inventoryManager.movingSlotObject;
+            _movingSlot = _inventoryManager.movingSlot;
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -24,16 +32,17 @@ namespace Inventories
             {
                 if (current.name != "Slot") continue;
 
-                _selected = current.GetComponent<Slot>();
-
-                for (int i = 0; i < _selected.ItemCount; i++)
+                _startingSlot = current.GetComponent<Slot>();
+                
+                if (_startingSlot.IsEmpty)
                 {
-                    var wasAdded = _movingSlot.AddItem(_selected.Peek);
-                    
-                    if (!wasAdded) return;
-                    
-                    _movingObject.SetActive(true);
+                    _startingSlot = null;
+                    return;
                 }
+                
+                _movingSlot.AddItems(_startingSlot.Items);
+                _movingObject.SetActive(true);
+                return;
             }
         }
         
@@ -44,29 +53,55 @@ namespace Inventories
         
         public void OnEndDrag(PointerEventData eventData)
         {
+            var dropItems = true;
+            
             foreach (var current in eventData.hovered)
             {
+                if (_startingSlot == null) return;
                 if (current.name != "Slot") continue;
-                if (current == _selected.gameObject) break;
-
-                var selected = current.GetComponent<Slot>();
-                
-                for (int i = 0; i < _movingSlot.ItemCount; i++)
+                if (current == _startingSlot.gameObject)
                 {
-                    var wasAdded = selected.AddItem(_movingSlot.Peek);
-                    
-                    Debug.Log($"{wasAdded} adding static items");
-                    
-                    if (!wasAdded) break;
-                    
-                    _movingObject.SetActive(true);
+                    dropItems = false;
+                    break;
                 }
-            }
 
-            //drop items
+                var currentSlot = current.GetComponent<Slot>();
+                
+                if (currentSlot.Peek != _startingSlot.Peek)
+                {
+                    var tempItems = new List<Item>(currentSlot.Items);
+                    
+                    currentSlot.ClearSlot();
+                    currentSlot.AddItems(_movingSlot.Items);
+                    currentSlot.ToggleComponent.isOn = true;
+                    
+                    _startingSlot.ClearSlot();
+                    _startingSlot.AddItems(tempItems);
+
+                    dropItems = false;
+                    break;
+                }
+
+                //If hovered slot does have items from moving slot add them
+                var rest = currentSlot.AddItems(_movingSlot.Items);
+
+                if (rest.Count == 0) break;
+                    
+                //else keep hovering with what left
+                _inventoryManager.keepHovering = true;
+
+                _startingSlot = null;
+                _movingSlot.RemoveItems(_movingSlot.Items.Count - rest.Count);
+                return;
+            }
             
-            _selected = null;
+            if (eventData.hovered.Count == 0 && !_movingSlot.IsEmpty && dropItems)
+            {
+                _inventoryManager.DropItems(_playerTransform, _movingSlot.Items);
+                _startingSlot.ClearSlot();
+            }
             
+            _startingSlot = null;
             _movingSlot.ClearSlot();
             _movingObject.SetActive(false);
         }

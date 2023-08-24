@@ -10,10 +10,15 @@ namespace Managers
     public class InventoryManager : MonoBehaviour
     {
         public GameObject slotPrefab;
-        public GameObject movingSlot;
+        
+        public Slot movingSlot;
+        public GameObject movingSlotObject;
         
         public Inventory playerInventory;
+        public Transform playerTransform;
         public ToggleGroup inventoryToggleGroup;
+
+        [HideInInspector] public bool keepHovering;
 
         private Slot _selected;
 
@@ -23,13 +28,23 @@ namespace Managers
 
         private void Start()
         {
-            movingSlot.SetActive(false);
+            movingSlotObject.SetActive(false);
             
             //TODO on vault closed change selected to first inventory slot
         }
 
         private void Update()
         {
+            if (keepHovering)
+            {
+                if (Input.GetKeyDown(KeyCode.Mouse0))
+                {
+                    DropItems(playerTransform, movingSlot.Items);
+                }
+                
+                movingSlotObject.transform.position = Input.mousePosition;
+            }
+            
             if (Input.GetAxisRaw("Mouse ScrollWheel") > 0)
             {
                 //select next
@@ -38,7 +53,7 @@ namespace Managers
             {
                 //select previous
             }
-
+            
             if (Input.anyKeyDown)
             {
                 if (Input.GetKeyDown(KeyCode.I))
@@ -69,13 +84,21 @@ namespace Managers
         public void CloseVault()
         {
             
-            
+            //TODO if chest open firstly close chest (two of three times as fast) then close vault
             //TODO if moving slot has items from vault try to add them back, if its not possible drop them
         }
 
+        /// <summary>
+        /// Drops items randomly near given character
+        /// </summary>
+        /// <param name="characterTransform"></param>
+        /// <param name="items"></param>
         public void DropItems(Transform characterTransform, List<Item> items)
         {
+            if (characterTransform == null || items == null) return;
             
+            movingSlot.ClearSlot();
+            movingSlotObject.SetActive(false);
         }
     }
 }

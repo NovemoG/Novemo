@@ -11,26 +11,25 @@ namespace Inventories.Slots
     {
         public Item Peek => !IsEmpty ? _items[0] : null;
         
-        public int ItemCount => _items.Count;
-        
-        public bool IsEmpty => ItemCount == 0;
-        public bool IsFull => !IsEmpty && _items[0].stackLimit == ItemCount;
+        public bool IsEmpty => _items.Count == 0;
+        public bool IsFull => !IsEmpty && _items[0].stackLimit == _items.Count;
 
         public Image slotIcon;
         public TextMeshProUGUI stackText;
         
         public GameObject borderObject;
         public GameObject backgroundObject;
-
-        private Toggle _toggleComponent;
         
+        public List<Item> Items => _items;
         private List<Item> _items;
+
+        public Toggle ToggleComponent { get; private set; }
 
         private void Awake()
         {
             _items = new List<Item>();
-            _toggleComponent = GetComponent<Toggle>();
-            _toggleComponent.group = GameManager.Instance.InventoryManager.inventoryToggleGroup;
+            ToggleComponent = GetComponent<Toggle>();
+            ToggleComponent.group = GameManager.Instance.InventoryManager.inventoryToggleGroup;
         }
 
         public bool AddItem(Item item)
@@ -44,19 +43,32 @@ namespace Inventories.Slots
 
             _items.Add(item);
 
-            if (ItemCount == 1)
+            switch (_items.Count)
             {
-                slotIcon.gameObject.SetActive(true);
-                slotIcon.sprite = item.itemIcon;
-            }
-
-            if (ItemCount > 1)
-            {
-                stackText.gameObject.SetActive(true);
-                stackText.text = ItemCount.ToString();
+                case 1:
+                    slotIcon.gameObject.SetActive(true);
+                    slotIcon.sprite = item.itemIcon;
+                    break;
+                case > 1:
+                    stackText.gameObject.SetActive(true);
+                    stackText.text = _items.Count.ToString();
+                    break;
             }
 
             return true;
+        }
+
+        public List<Item> AddItems(List<Item> items)
+        {
+            items = new List<Item>(items);
+            
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (!AddItem(items[0])) break;
+                items.RemoveAt(0);
+            }
+
+            return items;
         }
 
         public bool RemoveItem()
@@ -70,14 +82,24 @@ namespace Inventories.Slots
                 slotIcon.gameObject.SetActive(false);
             }
             
-            stackText.text = ItemCount.ToString();
+            stackText.text = _items.Count.ToString();
             
-            if (ItemCount <= 1)
+            if (_items.Count <= 1)
             {
                 stackText.gameObject.SetActive(false);
             }
             
             return true;
+        }
+
+        public int RemoveItems(int count)
+        {
+            while (RemoveItem())
+            {
+                count--;
+            }
+
+            return count;
         }
 
         /// <summary>
@@ -87,12 +109,13 @@ namespace Inventories.Slots
         {
             _items.Clear();
             stackText.text = "";
-            stackText.gameObject.SetActive(true);
+            stackText.gameObject.SetActive(false);
+            slotIcon.gameObject.SetActive(false);
         }
 
         public void ToggleBorder()
         {
-            borderObject.SetActive(_toggleComponent.isOn);
+            borderObject.SetActive(ToggleComponent.isOn);
         }
     }
 }
