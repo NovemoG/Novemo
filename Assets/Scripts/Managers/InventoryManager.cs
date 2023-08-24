@@ -87,7 +87,7 @@ namespace Managers
             //TODO if chest open firstly close chest (two of three times as fast) then close vault
             //TODO if moving slot has items from vault try to add them back, if its not possible drop them
         }
-
+        
         /// <summary>
         /// Drops items randomly near given character
         /// </summary>
@@ -97,6 +97,36 @@ namespace Managers
         {
             if (characterTransform == null || items == null) return;
             
+            movingSlot.ClearSlot();
+            movingSlotObject.SetActive(false);
+        }
+        
+        public void MergeStacks(Slot from, Slot to)
+        {
+            if (to.IsFull)
+            {
+                SwapItems(from, to);
+                return;
+            }
+			
+            to.AddItems(from.Items);
+            from.UpdateSlot();
+        }
+
+        public void SwapItems(Slot from, Slot to)
+        {
+            var tempItems = new List<Item>(to.Items);
+
+            to.ClearSlot();
+            to.AddItems(movingSlot.Items);
+            to.ToggleComponent.isOn = true;
+
+            from.ClearSlot();
+            from.AddItems(tempItems);
+        }
+
+        public void ClearMovingSlot()
+        {
             movingSlot.ClearSlot();
             movingSlotObject.SetActive(false);
         }

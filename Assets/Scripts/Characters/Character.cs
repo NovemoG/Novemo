@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core;
 using Core.Patterns;
 using Enums;
@@ -161,6 +162,7 @@ namespace Characters
             if (healthRegen != 0 || manaRegen != 0)
             {
                 var regenEffect = new Regen(this);
+                    
                 EffectsController.ApplyEffect(regenEffect);
             }
         }
@@ -171,8 +173,9 @@ namespace Characters
             {
                 if (Input.GetKeyDown(KeyCode.D))
                 {
-                    InvokeHealthChange(-2);
-                    DamageTaken?.Invoke(this, DamageType.Physical, 2, false);
+                    TakeDamage(this, DamageType.Physical, 5, false);
+                    /*InvokeHealthChange(-2);
+                    DamageTaken?.Invoke(this, DamageType.Physical, 2, false);*/
                 }
                 if (Input.GetKeyDown(KeyCode.H))
                 {
@@ -223,7 +226,11 @@ namespace Characters
                 : stats[9].Value * (1 - source.stats[15].Value);
             var damageReduction = defense / math.pow(500 + defense, 0.97f);
             
-            var final = amount * damageReduction + lethal;
+            Debug.Log(1 - damageReduction);
+            
+            var final = amount * (1 - damageReduction) + lethal;
+            
+            Debug.Log(final);
             
             //TODO life steal/spell vampirism source heals on attack
             //source.Heal(source, source.stats[16].Value * final, false);

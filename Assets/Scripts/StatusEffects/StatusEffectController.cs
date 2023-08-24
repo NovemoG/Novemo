@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace StatusEffects
 {
 	public class StatusEffectController : MonoBehaviour
 	{
-		private List<StatusEffect> _effects;
+		public List<StatusEffect> _effects;
 
 		private void Awake()
 		{
@@ -14,14 +15,14 @@ namespace StatusEffects
 
 		private void FixedUpdate()
 		{
-			EveryTick();
+			TickEffects();
 		}
 
 		public bool ApplyEffect(StatusEffect effect)
 		{
 			for (int i = 0; i < _effects.Count; i++)
 			{
-				if (_effects[i].EffectName == effect.EffectName && !effect.CanStack)
+				if (!effect.CanStack && _effects[i].EffectName == effect.EffectName)
 				{
 					return false;
 				}
@@ -36,35 +37,28 @@ namespace StatusEffects
 		{
 			for (int i = 0; i < _effects.Count; i++)
 			{
-				if (_effects[i].Id == id)
-				{
-					_effects.RemoveAt(i);
-					return;
-				}
+				if (_effects[i].Id != id) continue;
+				
+				_effects.RemoveAt(i);
+				return;
 			}
 		}
 
-		private void EveryTick()
+		private void TickEffects()
 		{
-			for (int i = 0; i < _effects.Count; i++)
+			foreach (var effect in _effects)
 			{
-				_effects[i].Tick();
+				effect.Tick();
 			}
 		}
 
 		private int GenerateUniqueId()
 		{
-			var id = Random.Range(0, short.MaxValue);
-			
-			for (int i = 0; i < _effects.Count; i++)
-			{
-				if (_effects[i].Id != id) continue;
-				
-				id = Random.Range(0, short.MaxValue);
-				i = 0;
-			}
+			var excludedIds = _effects.Select(e => e.Id).ToHashSet();
+			var range = Enumerable.Range(0, byte.MaxValue).Where(i => !excludedIds.Contains(i));
 
-			return id;
+			var index = Random.Range(0, byte.MaxValue - excludedIds.Count);
+			return range.ElementAt(index);
 		}
 	}
 }

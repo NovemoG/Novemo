@@ -108,7 +108,6 @@ namespace Characters.Player
 
 				if (Input.GetKeyDown(KeyCode.Equals))
 				{
-					//TODO static classes for item uses
 					_inventory.AllSlots[11].Peek.Use();
 				}
 			}

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Items;
 using Managers;
 using TMPro;
@@ -58,11 +59,15 @@ namespace Inventories.Slots
             return true;
         }
 
+        /// <summary>
+        /// Adds items to a slot while simultaneously removing items one by one from provided list 
+        /// </summary>
+        /// <returns>A list of items that left which couldn't be added</returns>
         public List<Item> AddItems(List<Item> items)
         {
-            items = new List<Item>(items);
+            var count = items.Count;
             
-            for (int i = 0; i < items.Count; i++)
+            for (int i = 0; i < count; i++)
             {
                 if (!AddItem(items[0])) break;
                 items.RemoveAt(0);
@@ -100,6 +105,16 @@ namespace Inventories.Slots
             }
 
             return count;
+        }
+
+        public void UpdateSlot()
+        {
+            if (_items.Count == 0)
+            {
+                ClearSlot();
+            }
+            
+            stackText.text = _items.Count > 1 ? _items.Count.ToString() : "";
         }
 
         /// <summary>

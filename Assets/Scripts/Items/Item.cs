@@ -22,8 +22,10 @@ namespace Items
         public List<Tag> itemTags;
 
         //TODO calculate cost dynamically
-        public int sellCost;
-        public int buyCost;
+        public int baseSellCost;
+        public int baseBuyCost;
+        public virtual int SellCost => baseSellCost;
+        public virtual int BuyCost => baseBuyCost;
 
         protected virtual int ReferenceId => itemName.Length + itemDescription.Length + (int)itemRarity + (int)itemType + stackLimit;
 

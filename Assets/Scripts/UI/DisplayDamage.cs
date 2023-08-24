@@ -44,7 +44,7 @@ namespace UI
         
         private void ShowDamage(Character source, DamageType damageType, float value, bool isCrit)
         {
-            if (value < 2) return;
+            if (value < 3) return;
             _path = !_path;
 
             var indicator = Instantiate(indicatorPrefab, indicatorCanvas);

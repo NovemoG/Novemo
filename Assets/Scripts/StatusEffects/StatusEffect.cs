@@ -11,7 +11,7 @@ namespace StatusEffects
 
 		protected readonly Character Character;
 		protected int TickCount;
-
+		
 		protected StatusEffect(Character character, string effectName, float seconds, bool canStack)
 		{
 			Character = character;
@@ -32,9 +32,6 @@ namespace StatusEffects
 			TickCount -= 1;
 		}
 
-		public virtual void EffectEnd()
-		{
-			
-		}
+		public virtual void EffectEnd() { }
 	}
 }

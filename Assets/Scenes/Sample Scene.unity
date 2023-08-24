@@ -1555,7 +1555,7 @@ GameObject:
   - component: {fileID: 350037900}
   m_Layer: 5
   m_Name: ChestCanvas
-  m_TagString: Untagged
+  m_TagString: Inventory
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5075,7 +5075,7 @@ GameObject:
   - component: {fileID: 1266858575}
   m_Layer: 5
   m_Name: VaultCanvas
-  m_TagString: Untagged
+  m_TagString: Inventory
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8487,7 +8487,7 @@ GameObject:
   - component: {fileID: 1977536356}
   m_Layer: 5
   m_Name: InventoryCanvas
-  m_TagString: Untagged
+  m_TagString: Inventory
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

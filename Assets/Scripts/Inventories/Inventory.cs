@@ -69,14 +69,14 @@ namespace Inventories
         }
 
         /// <summary>
-        /// Adds multiple items from provided list to inventory
+        /// Adds multiple items to inventory from provided list while simultaneously removing items one by one from provided list 
         /// </summary>
         /// <returns>List of items that left which couldn't be added</returns>
         public List<Item> AddItems(List<Item> items)
         {
-            items = new List<Item>(items);
+            var count = items.Count;
             
-            for (int i = 0; i < items.Count; i++)
+            for (int i = 0; i < count; i++)
             {
                 if (!AddItem(items[0])) break;
                 items.RemoveAt(0);
