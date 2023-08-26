@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8a0946122614ae4aa51d82fe6fd04ae, type: 3}
+  m_Name: CommonChestEarly
+  m_EditorClassIdentifier: 
+  possibleLoot:
+  - item: {fileID: 11400000, guid: d55dcd3ac17db0441b39677e977083d9, type: 2}
+    minCount: 0
+    maxCount: 1
+    weight: 70
+  - item: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    minCount: 0
+    maxCount: 3
+    weight: 7
+  - item: {fileID: 11400000, guid: 9a83ebcc05fef4828ae2da71de62532c, type: 2}
+    minCount: 0
+    maxCount: 2
+    weight: 3

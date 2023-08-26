@@ -4,12 +4,11 @@ using Items;
 namespace Loot
 {
 	[Serializable]
-	public struct LootStruct
+	public struct Loot
 	{
-		public Item Item;
+		public Item item;
 		public short minCount;
 		public short maxCount;
 		public short weight;
-		public LootTableObject lootTable;
 	}
 }

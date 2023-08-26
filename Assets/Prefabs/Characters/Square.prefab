@@ -1006,6 +1006,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5431700769824258727}
   - component: {fileID: 5431700769824258720}
+  - component: {fileID: 5764801357577176386}
+  - component: {fileID: 8477918400937629588}
   - component: {fileID: 3386690291905843316}
   - component: {fileID: 2819341322429857563}
   - component: {fileID: 1418094373845372964}
@@ -1034,7 +1036,7 @@ Transform:
   - {fileID: 7657899788960410063}
   - {fileID: 2684360863250490752}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5431700769824258720
 SpriteRenderer:
@@ -1088,6 +1090,79 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!50 &5764801357577176386
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5431700769824258722}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 1
+  m_UseAutoMass: 0
+  m_Mass: 0.0001
+  m_LinearDrag: 0
+  m_AngularDrag: 0
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 0
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!61 &8477918400937629588
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5431700769824258722}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!114 &3386690291905843316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1102,45 +1177,65 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stats:
   - statName: Health
-    baseValue: 45
+    baseValue: 0
+    bonusValues: []
   - statName: Mana
-    baseValue: 23
+    baseValue: 0
+    bonusValues: []
   - statName: Physical Attack
-    baseValue: 9
+    baseValue: 0
+    bonusValues: []
   - statName: Ability Power
-    baseValue: 7
+    baseValue: 0
+    bonusValues: []
   - statName: Lethal Damage
     baseValue: 0
+    bonusValues: []
   - statName: Attack Speed
-    baseValue: 0.75
+    baseValue: 0
+    bonusValues: []
   - statName: Crit Rate
     baseValue: 0
+    bonusValues: []
   - statName: Crit Bonus
     baseValue: 0
+    bonusValues: []
   - statName: Armor
-    baseValue: 9
+    baseValue: 0
+    bonusValues: []
   - statName: Magic Resistance
-    baseValue: 10
+    baseValue: 0
+    bonusValues: []
   - statName: Movement Speed
-    baseValue: 1
+    baseValue: 0
+    bonusValues: []
   - statName: Cooldown Reduction
     baseValue: 0
+    bonusValues: []
   - statName: Luck
     baseValue: 0
+    bonusValues: []
   - statName: Exp Bonus
     baseValue: 0
+    bonusValues: []
   - statName: Armor Penetration
     baseValue: 0
+    bonusValues: []
   - statName: Magic Penetration
     baseValue: 0
+    bonusValues: []
   - statName: Life Steal
     baseValue: 0
+    bonusValues: []
   - statName: Ability Vampirism
     baseValue: 0
+    bonusValues: []
   - statName: Counter Chance
     baseValue: 0
+    bonusValues: []
   - statName: Double Attack Chance
     baseValue: 0
+    bonusValues: []
   healthRegen: 0.1
   manaRegen: 0.1
   level: 1

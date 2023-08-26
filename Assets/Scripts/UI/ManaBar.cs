@@ -5,7 +5,7 @@ namespace UI
         protected override void Awake()
         {
             base.Awake();
-
+            
             Character.ManaChange += UpdateManaBar;
         }
 

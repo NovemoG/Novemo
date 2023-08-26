@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Stats
@@ -11,7 +12,7 @@ namespace Stats
         {
             statName = name;
             this.baseValue = baseValue;
-            _bonusValues = new List<StatBonus>();
+            bonusValues = new List<StatBonus>();
         }
         
         [SerializeField] private string statName;
@@ -22,32 +23,25 @@ namespace Stats
         /// <summary>
         /// Container for bonus stat values for easy identification and calculation
         /// </summary>
-        private List<StatBonus> _bonusValues;
+        [SerializeField] private List<StatBonus> bonusValues;
         
         public string StatName => statName;
         public float BaseValue => baseValue;
 
-        public float Value => baseValue + BonusValue();
-
         public float BonusValue()
         {
-            if (_bonusValues.Count == 0) return 0;
-            
-            float temp = 0;
+            if (bonusValues.Count == 0) return 0;
 
-            foreach (var bonusValue in _bonusValues)
-            {
-                temp += bonusValue.BonusValue;
-            }
-
-            return temp;
+            return bonusValues.Sum(bonusValue => bonusValue.BonusValue);
         }
+        
+        public float Value => baseValue + BonusValue();
         
         public float GetBonus(string name)
         {
-            if (_bonusValues.Count == 0) return 0;
+            if (bonusValues.Count == 0) return 0;
             
-            foreach (var bonusValue in _bonusValues)
+            foreach (var bonusValue in bonusValues)
             {
                 if (bonusValue.BonusName == name)
                     return bonusValue.BonusValue;
@@ -63,7 +57,7 @@ namespace Stats
         /// <param name="value">Value by which a base is modified</param>
         public void AddBonus(string name, float value)
         {
-            _bonusValues.Add(new StatBonus(name, baseValue * value, value));
+            bonusValues.Add(new StatBonus(name, baseValue * value, value));
         }
 
         /// <summary>
@@ -72,11 +66,11 @@ namespace Stats
         /// <param name="name">Name of a bonus value</param>
         public void RemoveBonus(string name)
         {
-            for (int i = 0; i < _bonusValues.Count; i++)
+            for (int i = 0; i < bonusValues.Count; i++)
             {
-                if (_bonusValues[i].BonusName == name)
+                if (bonusValues[i].BonusName == name)
                 {
-                    _bonusValues.RemoveAt(i);
+                    bonusValues.RemoveAt(i);
                     i--;
                 }
             }
@@ -84,7 +78,7 @@ namespace Stats
 
         private void RecalculateBonuses()
         {
-            foreach (var bonusValue in _bonusValues)
+            foreach (var bonusValue in bonusValues)
             {
                 bonusValue.Recalculate(baseValue);
             }

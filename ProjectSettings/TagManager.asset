@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Inventory
   - Slot
+  - Chest
   layers:
   - Default
   - TransparentFX

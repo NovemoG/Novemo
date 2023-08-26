@@ -3,6 +3,7 @@ using Enums;
 using Interfaces;
 using Inventories;
 using Items;
+using Loot;
 using Managers;
 using TMPro;
 using UnityEngine;
@@ -13,7 +14,11 @@ namespace Characters.Player
 	{
 		public TextMeshProUGUI levelText;
 
+		private bool _openChest;
+		private LootChest _collidingChest;
+		
 		private Inventory _inventory;
+		private InventoryManager _inventoryManager;
 		
 		/// <summary>
 		/// Gives information about item added to inventory
@@ -42,6 +47,7 @@ namespace Characters.Player
 			LevelUp += UpdateLevelText;
 
 			_inventory = GameManager.Instance.InventoryManager.playerInventory;
+			_inventoryManager = GameManager.Instance.InventoryManager;
 		}
 
 		protected override void Update()
@@ -110,6 +116,14 @@ namespace Characters.Player
 				{
 					_inventory.AllSlots[11].Peek.Use();
 				}
+
+				if (_openChest)
+				{
+					if (Input.GetKeyDown(KeyCode.C))
+					{
+						_inventoryManager.ToggleChest(_collidingChest);
+					}
+				}
 			}
 		}
 
@@ -121,6 +135,30 @@ namespace Characters.Player
 		private void UpdateLevelText(Character target, int lvl)
 		{
 			levelText.text = lvl.ToString();
+		}
+
+		private void OnTriggerEnter2D(Collider2D other)
+		{
+			_openChest = true;
+			
+			if (other.gameObject.CompareTag("Chest"))
+			{
+				_collidingChest = other.gameObject.GetComponent<LootChest>();
+			}
+
+			//TODO activate border
+		}
+
+		private void OnTriggerExit2D(Collider2D other)
+		{
+			_openChest = false;
+			
+			if (other.gameObject.CompareTag("Chest"))
+			{
+				_collidingChest = other.gameObject.GetComponent<LootChest>();
+			}
+			
+			//TODO deactivate border
 		}
 	}
 }

@@ -18,8 +18,7 @@ namespace Inventories
         
         public int freeSlots;
         
-        [NonSerialized]
-        public List<Slot> AllSlots;
+        [NonSerialized] public List<Slot> AllSlots;
 
         protected virtual void Awake()
         {
@@ -54,7 +53,7 @@ namespace Inventories
         /// Tries to add one item to inventory
         /// </summary>
         /// <returns>A boolean value that represents whether the provided item was successfully added</returns>
-        public bool AddItem(Item item)
+        public virtual bool AddItem(Item item)
         {
             if (freeSlots == 0) return false;
             
@@ -72,7 +71,7 @@ namespace Inventories
         /// Adds multiple items to inventory from provided list while simultaneously removing items one by one from provided list 
         /// </summary>
         /// <returns>List of items that left which couldn't be added</returns>
-        public List<Item> AddItems(List<Item> items)
+        public virtual List<Item> AddItems(List<Item> items)
         {
             var count = items.Count;
             
@@ -89,13 +88,14 @@ namespace Inventories
         /// Adds provided item to inventory multiple times
         /// </summary>
         /// <returns>Number of items that couldn't be added</returns>
-        public int AddItems(Item item, int count)
+        public virtual int AddItems(Item item, int count)
         {
-            while (AddItem(item))
+            for (int i = 0; i < count; i++)
             {
+                if (!AddItem(item)) break;
                 count--;
             }
-
+            
             return count;
         }
 
@@ -103,7 +103,7 @@ namespace Inventories
         /// Removes one item from inventory
         /// </summary>
         /// <returns>A boolean value that represents whether the provided item was successfully removed</returns>
-        public bool RemoveItem(Item item)
+        public virtual bool RemoveItem(Item item)
         {
             bool wasRemoved = false;
             
@@ -123,10 +123,11 @@ namespace Inventories
         /// Removes multiple items from inventory
         /// </summary>
         /// <returns>A boolean value that represents whether function removed items or it is not possible to do so</returns>
-        public int RemoveItems(Item item, int count)
+        public virtual int RemoveItems(Item item, int count)
         {
-            while (RemoveItem(item))
+            for (int i = 0; i < count; i++)
             {
+                if (!RemoveItem(item)) break;
                 count--;
             }
 

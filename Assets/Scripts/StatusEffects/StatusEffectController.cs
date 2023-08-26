@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using Core;
 using UnityEngine;
 
 namespace StatusEffects
 {
 	public class StatusEffectController : MonoBehaviour
 	{
-		public List<StatusEffect> _effects;
+		private List<StatusEffect> _effects;
 
 		private void Awake()
 		{
@@ -28,7 +29,7 @@ namespace StatusEffects
 				}
 			}
 
-			effect.Id = GenerateUniqueId();
+			effect.Id = UniqueId.Generate(_effects.Select(e => e.Id).ToHashSet(), 0, byte.MaxValue);
 			_effects.Add(effect);
 			return true;
 		}
@@ -50,15 +51,6 @@ namespace StatusEffects
 			{
 				effect.Tick();
 			}
-		}
-
-		private int GenerateUniqueId()
-		{
-			var excludedIds = _effects.Select(e => e.Id).ToHashSet();
-			var range = Enumerable.Range(0, byte.MaxValue).Where(i => !excludedIds.Contains(i));
-
-			var index = Random.Range(0, byte.MaxValue - excludedIds.Count);
-			return range.ElementAt(index);
 		}
 	}
 }

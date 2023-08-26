@@ -1,7 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
+using Core;
 using Inventories;
 using Inventories.Slots;
 using Items;
+using Loot;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,12 +16,19 @@ namespace Managers
         
         public Slot movingSlot;
         public GameObject movingSlotObject;
+
+        public RectTransform vaultRectTransform;
+        public RectTransform chestRectTransform;
+        public Inventory chestInventory;
         
         public Inventory playerInventory;
         public Transform playerTransform;
         public ToggleGroup inventoryToggleGroup;
 
         [HideInInspector] public bool keepHovering;
+
+        private bool _vaultOpen;
+        private bool _chestOpen;
 
         private Slot _selected;
 
@@ -71,21 +81,79 @@ namespace Managers
 
                 if (Input.GetKeyDown(KeyCode.V))
                 {
-                    
+                    ToggleVault();
                 }
             }
         }
 
-        public void OpenVault()
+        public void ToggleVault()
         {
+            if (_vaultOpen) CloseVault();
+            else OpenVault();
+        }
+        
+        private void OpenVault()
+        {
+            LeanTween.cancel(vaultRectTransform);
             
+            _vaultOpen = true;
+            
+            LeanTween.moveX(vaultRectTransform, Metrics.TargetVaultPosition.x, 0.33f);
         }
 
-        public void CloseVault()
+        private void CloseVault()
         {
+            LeanTween.cancel(vaultRectTransform);
             
-            //TODO if chest open firstly close chest (two of three times as fast) then close vault
+            _vaultOpen = false;
+            
+            if (_chestOpen) CloseChest();
+            
+            LeanTween.moveX(vaultRectTransform, Metrics.DefaultVaultPosition.x, 0.21f);
+            
             //TODO if moving slot has items from vault try to add them back, if its not possible drop them
+        }
+
+        public void ToggleChest(LootChest chest)
+        {
+            if (_chestOpen) CloseChest();
+            else OpenChest(chest);
+        }
+
+        private void OpenChest(LootChest chest)
+        {
+            LeanTween.cancel(chestRectTransform);
+            
+            _chestOpen = true;
+            
+            foreach (var loot in chest.lootTable.GeneratedLoot)
+            {
+                chestInventory.AllSlots[loot.SlotId].AddItems(loot.Item, loot.Count);
+            }
+            
+            if (!_vaultOpen) OpenVault();
+            
+            LeanTween.moveX(chestRectTransform, Metrics.TargetChestPosition.x, 0.30f);
+        }
+        
+        private void CloseChest()
+        {
+            LeanTween.cancel(chestRectTransform);
+            
+            _chestOpen = false;
+
+            foreach (var slot in chestInventory.AllSlots)
+            {
+                slot.Items.Clear();
+            }
+
+            LeanTween.moveX(chestRectTransform, Metrics.DefaultChestPosition.x, 0.36f).setOnComplete(() =>
+            {
+                foreach (var slot in chestInventory.AllSlots.Where(slot => !slot.IsEmpty))
+                {
+                    slot.ClearSlot();
+                }
+            });
         }
         
         /// <summary>

@@ -76,6 +76,17 @@ namespace Inventories.Slots
             return items;
         }
 
+        public int AddItems(Item item, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                if (!AddItem(item)) break;
+                count--;
+            }
+
+            return count;
+        }
+
         public bool RemoveItem()
         {
             if (IsEmpty) return false;
@@ -99,8 +110,9 @@ namespace Inventories.Slots
 
         public int RemoveItems(int count)
         {
-            while (RemoveItem())
+            for (int i = 0; i < count; i++)
             {
+                if (!RemoveItem()) break;
                 count--;
             }
 

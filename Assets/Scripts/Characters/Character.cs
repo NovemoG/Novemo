@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Collections.ObjectModel;
 using Core;
 using Core.Patterns;
 using Enums;
@@ -30,28 +30,31 @@ namespace Characters
         /// Stats in order:<br/>
         /// 0 - Health<br/>
         /// 1 - Mana<br/>
-        /// 2 - Physical Attack<br/>
-        /// 3 - Ability Power<br/>
-        /// 4 - Lethal Damage (Percentage, applied to every type of damage, can't crit, can't apply any effects)<br/>
-        /// 5 - Attack Speed (Attacks/second)<br/>
-        /// 6 - Critical Rate (Percentage)<br/>
-        /// 7 - Critical Damage Bonus (Percentage)<br/>
-        /// 8 - Armor<br/>
-        /// 9 - Magic Resist<br/>
-        /// 10 - Movement Speed (Tiles/second)<br/>
-        /// 11 - Cooldown Reduction (Percentage)<br/>
-        /// 12 - Luck (Percentage)<br/>
-        /// 13 - Exp Bonus (Percentage)<br/>
-        /// 14 - Armor Penetration (Percentage)<br/>
-        /// 15 - Magic Penetration (Percentage)<br/>
-        /// 16 - Life Steal (Percentage)<br/>
-        /// 17 - Ability Vampirism (Percentage)<br/>
-        /// 18 - Counter Chance (Percentage, while blocking)<br/>
-        /// 19 - Double Attack Chance (Percentage)
+        /// 2 - Health Regen<br/>
+        /// 3 - Mana Regen<br/>
+        /// 4 - Physical Attack<br/>
+        /// 5 - Ability Power<br/>
+        /// 6 - Lethal Damage (Percentage, applied to every type of damage, can't crit, can't apply any effects)<br/>
+        /// 7 - Attack Speed (Attacks/second)<br/>
+        /// 8 - Critical Rate (Percentage)<br/>
+        /// 9 - Critical Damage Bonus (Percentage)<br/>
+        /// 10 - Armor<br/>
+        /// 11 - Magic Resist<br/>
+        /// 12 - Movement Speed (Tiles/second)<br/>
+        /// 13 - Cooldown Reduction (Percentage)<br/>
+        /// 14 - Luck (Percentage)<br/>
+        /// 15 - Exp Bonus (Percentage)<br/>
+        /// 16 - Armor Penetration (Percentage)<br/>
+        /// 17 - Magic Penetration (Percentage)<br/>
+        /// 18 - Life Steal (Percentage)<br/>
+        /// 19 - Ability Vampirism (Percentage)<br/>
+        /// 20 - Counter Chance (Percentage, while blocking)<br/>
+        /// 21 - Double Attack Chance (Percentage)
         /// </summary>
-        [SerializeField]
-        public List<Stat> stats;
+        [SerializeField] protected List<Stat> stats;
 
+        public ReadOnlyCollection<Stat> Stats => stats.AsReadOnly();
+        
         public float MaxHealth => stats[0].Value;
         public float CurrentHealth { get; private set; }
         public float healthRegen;
@@ -93,6 +96,7 @@ namespace Characters
         /// </summary>
         /// <para> Passes values (in order): Current health; Max health; Value by which health was modified</para>
         public event Action<float, float, float> HealthChange;
+        
         /// <summary>
         /// Function used to change character's health value. To decrease health use -value
         /// </summary>
@@ -119,6 +123,7 @@ namespace Characters
         /// </summary>
         /// <para> Passes values (in order): Current mana; Max mana; Value by which mana was modified</para>
         public event Action<float, float, float> ManaChange;
+        
         /// <summary>
         /// Function used to change character's mana value. To decrease mana use -value
         /// </summary>
@@ -174,8 +179,6 @@ namespace Characters
                 if (Input.GetKeyDown(KeyCode.D))
                 {
                     TakeDamage(this, DamageType.Physical, 5, false);
-                    /*InvokeHealthChange(-2);
-                    DamageTaken?.Invoke(this, DamageType.Physical, 2, false);*/
                 }
                 if (Input.GetKeyDown(KeyCode.H))
                 {
@@ -186,7 +189,7 @@ namespace Characters
 
         public int level;
 
-        public int ExpNeeded => 4 * level.Pow(3) - 8 * level * level + 25 * level - 5;
+        public int ExpNeeded => 4 * level.Pow(3) - 8 * level.Pow(2) + 25 * level;
         private int _currentExp;
         public int CurrentExp
         {
@@ -226,11 +229,7 @@ namespace Characters
                 : stats[9].Value * (1 - source.stats[15].Value);
             var damageReduction = defense / math.pow(500 + defense, 0.97f);
             
-            Debug.Log(1 - damageReduction);
-            
             var final = amount * (1 - damageReduction) + lethal;
-            
-            Debug.Log(final);
             
             //TODO life steal/spell vampirism source heals on attack
             //source.Heal(source, source.stats[16].Value * final, false);
