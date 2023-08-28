@@ -15,15 +15,26 @@ namespace Characters
 {
     [RequireComponent(typeof(StatusEffectController))]
     [RequireComponent(typeof(DisplayDamage))]
+    [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(SpriteRenderer))]
     public class Character : MonoBehaviour, IDamageable
     {
         #region Stats
 
         private void OnValidate()
         {
-            stats = StatsListPattern.StatsPattern;
+            CharacterStats = PlayerStatsList.StatsPattern;
             EffectsController = GetComponent<StatusEffectController>();
+
+            stats.Clear();
+            
+            foreach (var stat in CharacterStats)
+            {
+                stats.Add(stat.Value);
+            }
         }
+        
+        [SerializeField] protected List<Stat> stats;
 
         /// <summary>
         /// Percentage values are represented by this notation: .value<br/>
@@ -36,8 +47,8 @@ namespace Characters
         /// 5 - Ability Power<br/>
         /// 6 - Lethal Damage (Percentage, applied to every type of damage, can't crit, can't apply any effects)<br/>
         /// 7 - Attack Speed (Attacks/second)<br/>
-        /// 8 - Critical Rate (Percentage)<br/>
-        /// 9 - Critical Damage Bonus (Percentage)<br/>
+        /// 8 - Crit Rate (Percentage)<br/>
+        /// 9 - Crit Bonus (Percentage)<br/>
         /// 10 - Armor<br/>
         /// 11 - Magic Resist<br/>
         /// 12 - Movement Speed (Tiles/second)<br/>
@@ -51,17 +62,17 @@ namespace Characters
         /// 20 - Counter Chance (Percentage, while blocking)<br/>
         /// 21 - Double Attack Chance (Percentage)
         /// </summary>
-        [SerializeField] protected List<Stat> stats;
-
+        protected Dictionary<string, Stat> CharacterStats;
+        
         public ReadOnlyCollection<Stat> Stats => stats.AsReadOnly();
         
-        public float MaxHealth => stats[0].Value;
+        public float MaxHealth => CharacterStats["Health"].Value;
         public float CurrentHealth { get; private set; }
-        public float healthRegen;
+        public float HealthRegen => CharacterStats["Health Regen"].Value;
 
-        public float MaxMana => stats[1].Value;
+        public float MaxMana => CharacterStats["Mana"].Value;
         public float CurrentMana { get; private set; }
-        public float manaRegen;
+        public float ManaRegen => CharacterStats["Mana Regen"].Value;
 
         #endregion
 
@@ -146,15 +157,45 @@ namespace Characters
         public event Action<int, int, int> ExperienceChange;
         public void InvokeExpChange(int value)
         {
-            CurrentExp += (int)(value * (1 + stats[13].Value));
+            CurrentExp += (int)(value * (1 + CharacterStats["Luck"].Value));
             ExperienceChange?.Invoke(ExpNeeded, CurrentExp, value);
         }
 
         #endregion
 
+        public int level;
+
+        public int ExpNeeded => 4 * level.Pow(3) - 8 * level.Pow(2) + 25 * level;
+        private int _currentExp;
+        public int CurrentExp
+        {
+            get => _currentExp;
+            set
+            {
+                _currentExp = value;
+                
+                while (_currentExp > ExpNeeded)
+                {
+                    level += 1;
+                    LevelUp?.Invoke(this, level);
+                }
+            }
+        }
+
+        protected Rigidbody2D Rigidbody2D;
+        protected SpriteRenderer SpriteRenderer;
+        
+        public StatusEffectController EffectsController { get; private set; }
+
+        private Character DamageSource { get; set; }
+        private DateTime LastCombatAction { get; set; }
+        
         protected virtual void Awake()
         {
-            
+            Rigidbody2D = GetComponent<Rigidbody2D>();
+            Rigidbody2D.bodyType = RigidbodyType2D.Kinematic;
+
+            SpriteRenderer = GetComponent<SpriteRenderer>();
         }
 
         protected virtual void Start()
@@ -164,7 +205,7 @@ namespace Characters
             level = level > 1 ? level : 1;
             LevelUp?.Invoke(this, level);
             
-            if (healthRegen != 0 || manaRegen != 0)
+            if (HealthRegen != 0 || ManaRegen != 0)
             {
                 var regenEffect = new Regen(this);
                     
@@ -187,30 +228,6 @@ namespace Characters
             }
         }
 
-        public int level;
-
-        public int ExpNeeded => 4 * level.Pow(3) - 8 * level.Pow(2) + 25 * level;
-        private int _currentExp;
-        public int CurrentExp
-        {
-            get => _currentExp;
-            set
-            {
-                _currentExp = value;
-                
-                while (_currentExp > ExpNeeded)
-                {
-                    level += 1;
-                    LevelUp?.Invoke(this, level);
-                }
-            }
-        }
-        
-        public StatusEffectController EffectsController { get; private set; }
-
-        private Character DamageSource { get; set; }
-        private DateTime LastCombatAction { get; set; }
-
         /// <summary>
         /// Returns damage taken
         /// </summary>
@@ -218,15 +235,15 @@ namespace Characters
         {
             if (isCrit)
             {
-                amount *= 1.5f + source.stats[7].Value;
+                amount *= 1.5f + source.CharacterStats["Crit Chance"].Value;
             }
 
             PreMitigatedDamage?.Invoke(source, type, amount, isCrit);
             
-            var lethal = amount * source.stats[4].Value;
+            var lethal = amount * source.CharacterStats["Lethal Damage"].Value;
             var defense = type == DamageType.Physical
-                ? stats[8].Value * (1 - source.stats[14].Value)
-                : stats[9].Value * (1 - source.stats[15].Value);
+                ? CharacterStats["Armor"].Value * (1 - source.CharacterStats["Armor Penetration"].Value)
+                : CharacterStats["Magic Resist"].Value * (1 - source.CharacterStats["Magic Penetration"].Value);
             var damageReduction = defense / math.pow(500 + defense, 0.97f);
             
             var final = amount * (1 - damageReduction) + lethal;

@@ -3,6 +3,7 @@ using Enums;
 using Interfaces;
 using Inventories;
 using Items;
+using Items.Equipment.Weapons;
 using Loot;
 using Managers;
 using TMPro;
@@ -13,6 +14,11 @@ namespace Characters.Player
 	public class Player : Character, IAttack
 	{
 		public TextMeshProUGUI levelText;
+		public GameObject weaponObject;
+		public Transform slashObject;
+		public Weapon weapon;
+
+		public float playerSize = 1;
 
 		private bool _openChest;
 		private LootChest _collidingChest;
@@ -35,14 +41,16 @@ namespace Characters.Player
 		{
 			base.Awake();
 			
-			stats[0].AddFlat(45);
-			stats[1].AddFlat(23);
-			stats[2].AddFlat(9);
-			stats[3].AddFlat(7);
-			stats[5].AddFlat(0.75f);
-			stats[8].AddFlat(9);
-			stats[9].AddFlat(10);
-			stats[10].AddFlat(1);
+			CharacterStats["Health"].AddFlat(45);
+			CharacterStats["Mana"].AddFlat(23);
+			CharacterStats["Health Regen"].AddFlat(0.2f);
+			CharacterStats["Mana Regen"].AddFlat(0.2f);
+			CharacterStats["Physical Attack"].AddFlat(9);
+			CharacterStats["Ability Power"].AddFlat(7);
+			CharacterStats["Attack Speed"].AddFlat(0.75f);
+			CharacterStats["Armor"].AddFlat(9);
+			CharacterStats["Magic Resist"].AddFlat(10);
+			CharacterStats["Movement Speed"].AddFlat(1);
 
 			LevelUp += UpdateLevelText;
 
@@ -56,67 +64,16 @@ namespace Characters.Player
 
 			if (Input.anyKeyDown)
 			{
-				//TODO check key binds instead of keys
-				if (Input.GetKeyDown(KeyCode.Alpha1))
+				if (Input.GetKeyDown(KeyCode.A))
 				{
-					_inventory.AllSlots[0].Peek.Use();
+					ChangeCharacterDirection(true);
 				}
 
-				if (Input.GetKeyDown(KeyCode.Alpha2))
+				if (Input.GetKeyDown(KeyCode.D))
 				{
-					_inventory.AllSlots[1].Peek.Use();
+					ChangeCharacterDirection(false);
 				}
-
-				if (Input.GetKeyDown(KeyCode.Alpha3))
-				{
-					_inventory.AllSlots[2].Peek.Use();
-				}
-
-				if (Input.GetKeyDown(KeyCode.Alpha4))
-				{
-					_inventory.AllSlots[3].Peek.Use();
-				}
-
-				if (Input.GetKeyDown(KeyCode.Alpha5))
-				{
-					_inventory.AllSlots[4].Peek.Use();
-				}
-
-				if (Input.GetKeyDown(KeyCode.Alpha6))
-				{
-					_inventory.AllSlots[5].Peek.Use();
-				}
-
-				if (Input.GetKeyDown(KeyCode.Alpha7))
-				{
-					_inventory.AllSlots[6].Peek.Use();
-				}
-
-				if (Input.GetKeyDown(KeyCode.Alpha8))
-				{
-					_inventory.AllSlots[7].Peek.Use();
-				}
-
-				if (Input.GetKeyDown(KeyCode.Alpha9))
-				{
-					_inventory.AllSlots[8].Peek.Use();
-				}
-
-				if (Input.GetKeyDown(KeyCode.Alpha0))
-				{
-					_inventory.AllSlots[9].Peek.Use();
-				}
-
-				if (Input.GetKeyDown(KeyCode.Minus))
-				{
-					_inventory.AllSlots[10].Peek.Use();
-				}
-
-				if (Input.GetKeyDown(KeyCode.Equals))
-				{
-					_inventory.AllSlots[11].Peek.Use();
-				}
-
+				
 				if (_openChest)
 				{
 					if (Input.GetKeyDown(KeyCode.C))
@@ -127,9 +84,37 @@ namespace Characters.Player
 			}
 		}
 
+		private void FixedUpdate()
+		{
+			MovePlayer();
+		}
+
 		public void Attack(Character target)
 		{
 			target.TakeDamage(this, DamageType.Magical, 1, false);
+		}
+
+		private void MovePlayer()
+		{
+			var moveSpeed = CharacterStats["Movement Speed"].Value;
+			var horizontalInput = Input.GetAxisRaw("Horizontal");
+			var verticalInput = Input.GetAxisRaw("Vertical");
+
+			if (horizontalInput != 0 || verticalInput != 0)
+			{
+				var velocity = new Vector2(horizontalInput * moveSpeed, verticalInput * moveSpeed);
+                			
+				Rigidbody2D.MovePosition(Rigidbody2D.position + velocity * Time.fixedDeltaTime);
+			}
+		}
+		
+		/// <summary>
+		/// Default direction is right
+		/// </summary>
+		private void ChangeCharacterDirection(bool left)
+		{
+			SpriteRenderer.flipX = left;
+			slashObject.transform.localPosition = new Vector3(left ? -1 : 1, 0);
 		}
 		
 		private void UpdateLevelText(Character target, int lvl)

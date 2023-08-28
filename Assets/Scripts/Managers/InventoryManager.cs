@@ -133,7 +133,7 @@ namespace Managers
             
             if (!_vaultOpen) OpenVault();
             
-            LeanTween.moveX(chestRectTransform, Metrics.TargetChestPosition.x, 0.30f);
+            LeanTween.moveX(chestRectTransform, Metrics.TargetChestPosition.x, 0.33f);
         }
         
         private void CloseChest()

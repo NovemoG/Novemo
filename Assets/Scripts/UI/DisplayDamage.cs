@@ -47,7 +47,7 @@ namespace UI
             if (value < 3) return;
             _path = !_path;
 
-            var indicator = Instantiate(indicatorPrefab, indicatorCanvas);
+            var indicator = Instantiate(indicatorPrefab, transform);
             
             _indicatorText = indicator.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
             if (isCrit)
@@ -55,7 +55,7 @@ namespace UI
                 _indicatorText.fontStyle = FontStyles.Bold;
                 _indicatorText.text = "{crit} ";
             }
-            _indicatorText.text += value.ToString();
+            _indicatorText.text += value.ToString("F0");
             _indicatorText.color = _indicatorColors[(int)damageType];
             
             var scale = Mathf.Clamp(value / 500, 0.5f, 1f);

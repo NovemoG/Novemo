@@ -44,3 +44,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Player
+    uniqueID: 633254111
+    locked: 0
+  - name: Entities
+    uniqueID: 3196885043
+    locked: 0
+  - name: Collectable
+    uniqueID: 2596863331
+    locked: 0
+  - name: Interactable
+    uniqueID: 3346950111
+    locked: 0
+  - name: Special
+    uniqueID: 4098092965
+    locked: 0

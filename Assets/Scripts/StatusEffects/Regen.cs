@@ -15,8 +15,8 @@ namespace StatusEffects
 
             if (TickCount == -26)
             {
-                Character.Heal(Character, Character.healthRegen, false);
-                Character.RegenerateMana(Character, Character.manaRegen);
+                Character.Heal(Character, Character.HealthRegen, false);
+                Character.RegenerateMana(Character, Character.ManaRegen);
                 TickCount = -1;
             }
         }
