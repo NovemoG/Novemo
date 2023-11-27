@@ -1,4 +1,5 @@
 using System.Linq;
+using DG.Tweening;
 using Inventories.Slots;
 using Managers;
 using UnityEngine;
@@ -29,6 +30,7 @@ namespace Inventories
 			if (_startingSlot.IsEmpty) return;
 			
 			_movingSlot.AddItems(_startingSlot.Item,_startingSlot.ItemCount);
+			_startingSlot.ToggleComponent.isOn = true;
 			_movingObject.SetActive(true);
 		}
 
@@ -39,6 +41,9 @@ namespace Inventories
 
 		public void OnEndDrag(PointerEventData eventData)
 		{
+			if (_startingSlot.IsEmpty) return;
+			if (_inventoryManager.SelectedSlotInventory != _startingSlot.ParentInventoryId) return;
+			
 			//If user is not hovering over any ui related to inventory, drop items
 			if (eventData.hovered.Count == 0 || !eventData.hovered.Any(gObject => gObject.CompareTag("Inventory")))
 			{
@@ -65,6 +70,12 @@ namespace Inventories
 			{
 				_inventoryManager.SwapItems(_startingSlot, currentSlot);
 			}
+
+			DOTween.Kill(6, true);
+			DOTween.Kill(7, true);
+
+			_startingSlot.ToggleComponent.interactable = false;
+			_startingSlot.ToggleComponent.interactable = true;
 			
 			_inventoryManager.ClearMovingSlot();
 		}

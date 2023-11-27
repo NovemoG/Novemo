@@ -19,22 +19,18 @@ namespace UI
 
         private readonly Vector2[] _rightPath = 
         {
-            new (0.2f, 0.2f), 
-            new (0.3f, 0.3f), 
-            new (0.35f, 0.35f),
-            new (0.4f, 0.4f),
-            new (0.45f, 0.35f),
-            new (0.5f, 0),
+            new (0.4f, 0.4f), 
+            new (0.43f, 0.37f),
+            new (0.46f, 0.33f),
+            new (0.5f, 0.3f),
         };
         
         private readonly Vector2[] _leftPath = 
         {
-            new (-0.2f, 0.2f), 
-            new (-0.3f, 0.3f), 
-            new (-0.35f, 0.35f),
-            new (-0.4f, 0.4f),
-            new (-0.45f, 0.35f),
-            new (-0.5f, 0),
+            new (-0.4f, 0.4f), 
+            new (-0.43f, 0.37f),
+            new (-0.46f, 0.33f),
+            new (-0.5f, 0.3f),
         };
 
         private bool _path;
@@ -52,8 +48,18 @@ namespace UI
         {
             if (value < 3) return;
             _path = !_path;
-
-            var indicator = Instantiate(indicatorPrefab, indicatorCanvas).transform;
+            
+            var path = new Vector3[4];
+            var charPosition = source.transform.position;
+             
+            for (int i = 0; i < 4; i++)
+            {
+                path[i] = _path ?
+                    new Vector2(charPosition.x + _rightPath[i].x, charPosition.y + _rightPath[i].y) :
+                    new Vector2(charPosition.x + _leftPath[i].x, charPosition.y + _leftPath[i].y);
+            }
+            
+            var indicator = Instantiate(indicatorPrefab, path[0], new Quaternion(), indicatorCanvas).transform;
             
             _indicatorText = indicator.GetChild(0).GetComponent<TextMeshProUGUI>();
             if (isCrit)
@@ -65,20 +71,13 @@ namespace UI
             _indicatorText.color = _indicatorColors[(int)damageType];
             
             var scale = Mathf.Clamp(value / 500, 0.5f, 1f);
+
+            if (isCrit) scale += 0.25f;
+            
             _indicatorText.transform.localScale = new Vector3(scale, scale, scale);
 
-            var path = new Vector3[6];
-            for (int i = 0; i < 4; i++)
-            {
-                var charPosition = source.transform.position;
-
-                path[i] = _path ?
-                    new Vector2(charPosition.x + _rightPath[i].x, charPosition.y + _rightPath[i].y) :
-                    new Vector2(charPosition.x + _leftPath[i].x, charPosition.y + _leftPath[i].y);
-            }
-
             indicator.DOPath(path, 1.25f);
-            indicator.DOScale(new Vector3(1, 1, 1), 1.25f).OnComplete(() => Destroy(indicator.gameObject));
+            indicator.DOScale(new Vector3(0.25f, 0.25f, 0.25f), 1f).SetDelay(0.25f).OnComplete(() => Destroy(indicator.gameObject));
         }
     }
 }

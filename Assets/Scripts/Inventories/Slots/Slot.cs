@@ -1,3 +1,5 @@
+using System;
+using DG.Tweening;
 using Items;
 using Managers;
 using TMPro;
@@ -25,9 +27,12 @@ namespace Inventories.Slots
         public GameObject backgroundObject;
 
         public Toggle ToggleComponent { get; private set; }
-
-        private int _parentInventoryId;
+        
+        private RectTransform _slotIconRect;
         private InventoryManager _inventoryManager;
+        
+        private int _slotTweenId;
+        [NonSerialized] public int ParentInventoryId;
 
         private void Awake()
         {
@@ -36,13 +41,17 @@ namespace Inventories.Slots
             ToggleComponent = GetComponent<Toggle>();
             ToggleComponent.group = _inventoryManager.inventoryToggleGroup;
 
-            _parentInventoryId = transform.parent.name switch
+            _slotIconRect = transform.GetChild(1).GetComponent<RectTransform>();
+
+            ParentInventoryId = transform.parent.name switch
             {
                 "Inventory" => 0,
                 "VaultInventory" => 1,
                 "ChestInventory" => 2,
-                _ => _parentInventoryId
+                _ => ParentInventoryId
             };
+
+            _slotTweenId = GetHashCode();
         }
 
         public bool AddItem(Item itemToAdd)
@@ -60,9 +69,15 @@ namespace Inventories.Slots
                     slotIcon.sprite = item.itemIcon;
                     break;
                 case > 1:
+                    stackText.gameObject.SetActive(true);
                     stackText.text = itemCount.ToString();
                     break;
             }
+
+            DOTween.Kill(6, true);
+            DOTween.Sequence()
+                   .Append(_slotIconRect.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.1f))
+                   .Append(_slotIconRect.DOScale(new Vector3(1f, 1f, 1f), 0.1f)).intId = _slotTweenId;
 
             return true;
         }
@@ -88,6 +103,11 @@ namespace Inventories.Slots
             
             itemCount -= 1;
             
+            DOTween.Kill(7, true);
+            DOTween.Sequence()
+                   .Append(_slotIconRect.DOScale(new Vector3(0.9f, 0.9f, 1f), 0.1f))
+                   .Append(_slotIconRect.DOScale(new Vector3(1f, 1f, 1f), 0.1f)).intId = _slotTweenId + 1;
+            
             UpdateSlot();
             
             return true;
@@ -104,7 +124,7 @@ namespace Inventories.Slots
             return count;
         }
 
-        public void UpdateSlot()
+        private void UpdateSlot()
         {
             switch (itemCount)
             {
@@ -127,13 +147,14 @@ namespace Inventories.Slots
         {
             item = null;
             itemCount = 0;
+            DOTween.Kill(7, true);
             stackText.gameObject.SetActive(false);
             slotIcon.gameObject.SetActive(false);
         }
 
         public void ToggleBorder()
         {
-            _inventoryManager.SelectedSlotInventory = _parentInventoryId;
+            _inventoryManager.SelectedSlotInventory = ParentInventoryId;
             borderObject.SetActive(ToggleComponent.isOn);
         }
     }

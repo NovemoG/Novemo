@@ -8,8 +8,7 @@ namespace Stats
     {
         public readonly string BonusName;
 
-        [SerializeField]
-        private float bonusValue;
+        [SerializeField] private float bonusValue;
         public float BonusValue => bonusValue;
 
         private readonly float _percentage;

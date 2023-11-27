@@ -20,5 +20,12 @@ namespace Items.Equipment
 
 			return true;
 		}
+
+		public virtual bool Unequip()
+		{
+
+
+			return true;
+		}
 	}
 }

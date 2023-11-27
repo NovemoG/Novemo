@@ -19,7 +19,8 @@ namespace Managers
         public Slot movingSlot;
         public GameObject movingSlotObject;
 
-        public Transform itemTooltipTransform;
+        public bool ShowTooltip { get; private set; }
+        public RectTransform itemTooltipTransform;
         public TextMeshProUGUI itemTooltipText;
 
         public RectTransform vaultRectTransform;
@@ -28,6 +29,7 @@ namespace Managers
         public Inventory playerInventory;
         public Inventory chestInventory;
         public Inventory vaultInventory;
+        public EquipmentInventory equipmentInventory;
 
         [NonSerialized] public int SelectedSlotId;
         [NonSerialized] public int SelectedSlotInventory;
@@ -39,6 +41,7 @@ namespace Managers
 
         public bool VaultOpen { get; private set; }
         public bool ChestOpen { get; private set; }
+        public bool EquipmentOpen { get; private set; }
 
         public Item red;
         public Item yellow;
@@ -47,8 +50,6 @@ namespace Managers
         private void Start()
         {
             movingSlotObject.SetActive(false);
-            
-            //TODO on vault closed change selected to first inventory slot
         }
 
         private void Update()
@@ -95,9 +96,22 @@ namespace Managers
                     playerInventory.AddItem(green);
                 }
 
+                if (Input.GetKeyDown(KeyCode.C) && (!VaultOpen || !ChestOpen))
+                {
+                    ShowTooltip = !ShowTooltip;
+
+                    if (!ShowTooltip)
+                    {
+                        itemTooltipTransform.gameObject.SetActive(false);
+                    }
+                }
                 if (Input.GetKeyDown(KeyCode.V))
                 {
                     ToggleVault();
+                }
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    ToggleEquipment();
                 }
             }
         }
@@ -113,6 +127,7 @@ namespace Managers
             DOTween.Kill(4);
             
             VaultOpen = true;
+            ShowTooltip = true;
             
             DOTween.To(() => vaultRectTransform.anchoredPosition.x,
                 x => vaultRectTransform.anchoredPosition = new Vector2(x, vaultRectTransform.anchoredPosition.y),
@@ -124,19 +139,19 @@ namespace Managers
             DOTween.Kill(4);
             
             VaultOpen = false;
+            ShowTooltip = false;
             
             if (ChestOpen) CloseChest();
 
             if (SelectedSlotInventory == 1)
             {
+                ClearMovingSlot();
                 DeselectSlot();
             }
             
             DOTween.To(() => vaultRectTransform.anchoredPosition.x,
                 x => vaultRectTransform.anchoredPosition = new Vector2(x, vaultRectTransform.anchoredPosition.y),
                 Metrics.DefaultVaultPosition.x, 0.21f).intId = 4;
-
-            //TODO if moving slot has items from vault try to add them back, if its not possible drop them
         }
 
         public void ToggleChest(LootChest chest)
@@ -150,6 +165,7 @@ namespace Managers
             DOTween.Kill(5);
             
             ChestOpen = true;
+            ShowTooltip = true;
 
             _currentChest = chest;
             foreach (var loot in _currentChest.ChestItems)
@@ -169,6 +185,7 @@ namespace Managers
             DOTween.Kill(5);
             
             ChestOpen = false;
+            ShowTooltip = false;
 
             _currentChest.ChestItems = new List<GeneratedLoot>();
             
@@ -189,12 +206,28 @@ namespace Managers
             
             if (SelectedSlotInventory == 2)
             {
+                ClearMovingSlot();
                 DeselectSlot();
             }
 
             DOTween.To(() => chestRectTransform.anchoredPosition.x,
                 x => chestRectTransform.anchoredPosition = new Vector2(x, chestRectTransform.anchoredPosition.y),
                 Metrics.DefaultChestPosition.x, 0.36f).intId = 5;
+        }
+        
+        private void ToggleEquipment()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CloseEquipment()
+        {
+            
+        }
+        
+        public void OpenEquipment()
+        {
+            
         }
 
         private void DeselectSlot()
@@ -228,8 +261,8 @@ namespace Managers
                 return;
             }
 			
-            to.AddItems(from.Item, from.ItemCount);
-            from.UpdateSlot();
+            var itemsLeft = from.ItemCount - to.AddItems(from.Item, from.ItemCount);
+            from.RemoveItems(itemsLeft);
         }
 
         public void SwapItems(Slot from, Slot to)

@@ -37,7 +37,6 @@ namespace Inventories
         {
             //TODO load items from save file
             
-            //TODO after save is loaded change '0' to last selected slot (in inventory)
             if (gameObject.name == "Inventory")
             {
                 AllSlots[0].GetComponent<Toggle>().isOn = true;
@@ -55,8 +54,6 @@ namespace Inventories
         /// <returns>A boolean value that represents whether the provided item was successfully added</returns>
         public virtual bool AddItem(Item item)
         {
-            if (freeSlots == 0) return false;
-            
             foreach (var slot in AllSlots)
             {
                 if (slot.IsEmpty) freeSlots--;

@@ -100,12 +100,13 @@ namespace Characters.Player
 
 		private void MovePlayer()
 		{
-			var moveSpeed = CharacterStats["Movement Speed"].Value;
 			var horizontalInput = Input.GetAxisRaw("Horizontal");
 			var verticalInput = Input.GetAxisRaw("Vertical");
 
 			if (horizontalInput != 0 || verticalInput != 0)
 			{
+				var moveSpeed = CharacterStats["Movement Speed"].Value;
+				
 				var velocity = new Vector2(horizontalInput * moveSpeed * 1.5f, verticalInput * moveSpeed * 1.5f);
                 			
 				Rigidbody2D.MovePosition(Rigidbody2D.position + velocity * Time.fixedDeltaTime);
@@ -132,8 +133,8 @@ namespace Characters.Player
 			{
 				if (_collidingChest != null)
 				{
-					if (Vector3.Distance(other.transform.position, transform.position) >
-					    Vector3.Distance(_collidingChest.transform.position, transform.position)) return;
+					if (Vector2.Distance(other.transform.position, transform.position) >
+					    Vector2.Distance(_collidingChest.transform.position, transform.position)) return;
 					
 					_collidingChest.transform.GetChild(0).gameObject.SetActive(false);
 				}
@@ -145,11 +146,11 @@ namespace Characters.Player
 		}
 
 		private void OnTriggerStay2D(Collider2D other)
-		{
+		{ 
 			if (_collidingChest == null) return;
 			
-			if (Vector3.Distance(other.transform.position, transform.position) <
-			    Vector3.Distance(_collidingChest.transform.position, transform.position))
+			if (Vector2.Distance(other.transform.position, transform.position) <
+			    Vector2.Distance(_collidingChest.transform.position, transform.position))
 			{
 				_collidingChest.transform.GetChild(0).gameObject.SetActive(false);
 
