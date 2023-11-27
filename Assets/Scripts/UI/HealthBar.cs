@@ -1,15 +1,19 @@
+using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using UnityEngine;
 
 namespace UI
 {
     public class HealthBar : Bar
     {
+        public int backHealthId;
         public RectTransform healthBack;
 
         private GameObject _healthBackObject;
         private float _previousHealth;
-
-        private int _id;
+        
+        private TweenerCore<float, float, FloatOptions> _backHealthTween;
 
         protected override void Awake()
         {
@@ -23,30 +27,33 @@ namespace UI
 
         private void UpdateHealthBar(float current, float max, float change)
         {
-            LeanTween.cancel(TweenId);
+            DOTween.Kill(tweenId);
 
             var fillPercentage = current / max;
             var healthBackPosition = -(650f - (650f * fillPercentage));
             
-            TweenId = LeanTween.value(slider.value, fillPercentage, 0.05f).setOnUpdate(f => slider.value = f).uniqueId;
-
+            DOTween.To(() => slider.value, x => slider.value = x, fillPercentage, 0.05f).intId = tweenId;
+            
             if (_previousHealth > current || healthBack.anchoredPosition.x > healthBackPosition)
             {
-                var descr = LeanTween.descr(_id);
-                
-                if (descr != null)
+                if (_backHealthTween != null)
                 {
-                    descr.setTo(new Vector3(healthBackPosition, 0, 0));
+                    _backHealthTween.ChangeEndValue(healthBackPosition, true);
                 }
                 else
                 {
-                    _id = LeanTween.moveX(healthBack, healthBackPosition, 0.35f).setDelay(0.5f).uniqueId;
+                    _backHealthTween = DOTween.To(() => healthBack.anchoredPosition.x,
+                                           x => healthBack.anchoredPosition = new Vector2(x, 0), healthBackPosition,
+                                           0.35f).SetDelay(0.5f).OnComplete(() => _backHealthTween = null);
+                    _backHealthTween.intId = backHealthId;
                 }
             }
             else
             {
-                LeanTween.cancel(_healthBackObject);
-                LeanTween.moveX(healthBack, healthBackPosition, 0.05f);
+                DOTween.Kill(backHealthId);
+                DOTween.To(() => healthBack.anchoredPosition.x, x => healthBack.anchoredPosition = new Vector2(x, 0),
+                    healthBackPosition, 0.05f);
+                _backHealthTween = null;
             }
 
             _previousHealth = current;

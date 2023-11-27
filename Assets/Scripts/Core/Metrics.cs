@@ -10,7 +10,7 @@ namespace Core
         public static Vector2 TargetVaultPosition = new(-297.5f, -445);
         
         public static Vector2 DefaultChestPosition = new(215.5f, -445);
-        public static Vector2 TargetChestPosition = new(-815.5f, -445);
+        public static Vector2 TargetChestPosition = new(-803.5f, -445);
         
         public const int ChestSize = 40;
     }

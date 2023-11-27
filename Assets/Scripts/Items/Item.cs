@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Core;
 using Enums;
 using Interfaces;
 using UnityEngine;
@@ -27,7 +28,10 @@ namespace Items
         public virtual int SellCost => baseSellCost;
         public virtual int BuyCost => baseBuyCost;
 
-        protected virtual int ReferenceId => itemName.Length + itemDescription.Length + (int)itemRarity + (int)itemType + stackLimit;
+        public virtual string ItemTooltip() => string.Format(Templates.ItemTooltipTemplate,
+            Templates.FormatItemName(itemName, itemRarity), itemDescription, stackLimit, itemType);
+
+        public virtual int ReferenceId => itemName.Length + itemDescription.Length + (int)itemRarity + (int)itemType + stackLimit;
 
         public virtual bool Use()
         {
@@ -65,8 +69,7 @@ namespace Items
 
         public override bool Equals(object obj)
         {
-            //if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
+            if (ReferenceEquals(null, obj)) return false;
             return obj.GetType() == this.GetType() && Equals((Item)obj);
         }
 

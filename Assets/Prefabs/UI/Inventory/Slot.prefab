@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4705915814858199783}
   - component: {fileID: 6474254398303651084}
   - component: {fileID: 1710535484677741223}
+  - component: {fileID: 5757710194228766154}
   m_Layer: 5
   m_Name: Slot
   m_TagString: Slot
@@ -35,7 +36,6 @@ RectTransform:
   - {fileID: 3148242971187846227}
   - {fileID: 6401230015854080154}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -54,6 +54,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c36802b92fbb484cb0b1e6c22bf536a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  item: {fileID: 0}
+  itemCount: 0
   slotIcon: {fileID: 6530544308103585649}
   stackText: {fileID: 7336322994551443591}
   borderObject: {fileID: 5681748410040015432}
@@ -130,6 +132,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e465fd3d001e492a92fb4a32400ac860, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5757710194228766154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4856469449407306557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7bb231596e04a05872f3e363d96b057, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5572794359266326175
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,7 +175,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3148242971187846227}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -278,7 +291,7 @@ GameObject:
   - component: {fileID: 5415721975509398446}
   m_Layer: 5
   m_Name: Border
-  m_TagString: Untagged
+  m_TagString: SlotBackground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -296,7 +309,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8106868436919709995}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -354,7 +366,7 @@ GameObject:
   - component: {fileID: 7787365544649660300}
   m_Layer: 5
   m_Name: Background
-  m_TagString: Untagged
+  m_TagString: SlotBackground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -372,7 +384,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8106868436919709995}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -449,7 +460,6 @@ RectTransform:
   m_Children:
   - {fileID: 6957899830107234157}
   m_Father: {fileID: 8106868436919709995}
-  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}

@@ -1,10 +1,12 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using Core;
+using DG.Tweening;
 using Inventories;
 using Inventories.Slots;
 using Items;
 using Loot;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,20 +19,26 @@ namespace Managers
         public Slot movingSlot;
         public GameObject movingSlotObject;
 
+        public Transform itemTooltipTransform;
+        public TextMeshProUGUI itemTooltipText;
+
         public RectTransform vaultRectTransform;
         public RectTransform chestRectTransform;
-        public Inventory chestInventory;
         
         public Inventory playerInventory;
+        public Inventory chestInventory;
+        public Inventory vaultInventory;
+
+        [NonSerialized] public int SelectedSlotId;
+        [NonSerialized] public int SelectedSlotInventory;
+        
+        private LootChest _currentChest;
+        
         public Transform playerTransform;
         public ToggleGroup inventoryToggleGroup;
 
-        [HideInInspector] public bool keepHovering;
-
-        private bool _vaultOpen;
-        private bool _chestOpen;
-
-        private Slot _selected;
+        public bool VaultOpen { get; private set; }
+        public bool ChestOpen { get; private set; }
 
         public Item red;
         public Item yellow;
@@ -45,23 +53,31 @@ namespace Managers
 
         private void Update()
         {
-            if (keepHovering)
-            {
-                if (Input.GetKeyDown(KeyCode.Mouse0))
-                {
-                    DropItems(playerTransform, movingSlot.Items);
-                }
-                
-                movingSlotObject.transform.position = Input.mousePosition;
-            }
-            
             if (Input.GetAxisRaw("Mouse ScrollWheel") > 0)
             {
-                //select next
+                if (SelectedSlotId == 12)
+                {
+                    SelectedSlotId = 0;
+                    playerInventory.AllSlots[0].ToggleComponent.isOn = true;
+                }
+                else
+                {
+                    SelectedSlotId += 1;
+                    playerInventory.AllSlots[SelectedSlotId].ToggleComponent.isOn = true;
+                }
             }
             else if (Input.GetAxisRaw("Mouse ScrollWheel") < 0)
             {
-                //select previous
+                if (SelectedSlotId == 0)
+                {
+                    SelectedSlotId = 12;
+                    playerInventory.AllSlots[12].ToggleComponent.isOn = true;
+                }
+                else
+                {
+                    SelectedSlotId -= 1;
+                    playerInventory.AllSlots[SelectedSlotId].ToggleComponent.isOn = true;
+                }
             }
             
             if (Input.anyKeyDown)
@@ -88,82 +104,117 @@ namespace Managers
 
         public void ToggleVault()
         {
-            if (_vaultOpen) CloseVault();
+            if (VaultOpen) CloseVault();
             else OpenVault();
         }
         
-        private void OpenVault()
+        public void OpenVault()
         {
-            LeanTween.cancel(vaultRectTransform);
+            DOTween.Kill(4);
             
-            _vaultOpen = true;
+            VaultOpen = true;
             
-            LeanTween.moveX(vaultRectTransform, Metrics.TargetVaultPosition.x, 0.33f);
+            DOTween.To(() => vaultRectTransform.anchoredPosition.x,
+                x => vaultRectTransform.anchoredPosition = new Vector2(x, vaultRectTransform.anchoredPosition.y),
+                Metrics.TargetVaultPosition.x, 0.21f).intId = 4;
         }
 
-        private void CloseVault()
+        public void CloseVault()
         {
-            LeanTween.cancel(vaultRectTransform);
+            DOTween.Kill(4);
             
-            _vaultOpen = false;
+            VaultOpen = false;
             
-            if (_chestOpen) CloseChest();
+            if (ChestOpen) CloseChest();
+
+            if (SelectedSlotInventory == 1)
+            {
+                DeselectSlot();
+            }
             
-            LeanTween.moveX(vaultRectTransform, Metrics.DefaultVaultPosition.x, 0.21f);
-            
+            DOTween.To(() => vaultRectTransform.anchoredPosition.x,
+                x => vaultRectTransform.anchoredPosition = new Vector2(x, vaultRectTransform.anchoredPosition.y),
+                Metrics.DefaultVaultPosition.x, 0.21f).intId = 4;
+
             //TODO if moving slot has items from vault try to add them back, if its not possible drop them
         }
 
         public void ToggleChest(LootChest chest)
         {
-            if (_chestOpen) CloseChest();
+            if (ChestOpen) CloseChest();
             else OpenChest(chest);
         }
 
-        private void OpenChest(LootChest chest)
+        public void OpenChest(LootChest chest)
         {
-            LeanTween.cancel(chestRectTransform);
+            DOTween.Kill(5);
             
-            _chestOpen = true;
-            
-            foreach (var loot in chest.lootTable.GeneratedLoot)
+            ChestOpen = true;
+
+            _currentChest = chest;
+            foreach (var loot in _currentChest.ChestItems)
             {
                 chestInventory.AllSlots[loot.SlotId].AddItems(loot.Item, loot.Count);
             }
             
-            if (!_vaultOpen) OpenVault();
+            if (!VaultOpen) OpenVault();
             
-            LeanTween.moveX(chestRectTransform, Metrics.TargetChestPosition.x, 0.33f);
+            DOTween.To(() => chestRectTransform.anchoredPosition.x,
+                x => chestRectTransform.anchoredPosition = new Vector2(x, chestRectTransform.anchoredPosition.y),
+                Metrics.TargetChestPosition.x, 0.21f).intId = 5;
         }
         
-        private void CloseChest()
+        public void CloseChest()
         {
-            LeanTween.cancel(chestRectTransform);
+            DOTween.Kill(5);
             
-            _chestOpen = false;
+            ChestOpen = false;
 
-            foreach (var slot in chestInventory.AllSlots)
+            _currentChest.ChestItems = new List<GeneratedLoot>();
+            
+            for (var i = 0; i < chestInventory.AllSlots.Count; i++)
             {
-                slot.Items.Clear();
+                var slot = chestInventory.AllSlots[i];
+                if (slot.IsEmpty) continue;
+
+                _currentChest.ChestItems.Add(new GeneratedLoot
+                {
+                    Item = slot.Item,
+                    Count = slot.ItemCount,
+                    SlotId = i
+                });
+
+                slot.ClearSlot();
+            }
+            
+            if (SelectedSlotInventory == 2)
+            {
+                DeselectSlot();
             }
 
-            LeanTween.moveX(chestRectTransform, Metrics.DefaultChestPosition.x, 0.36f).setOnComplete(() =>
-            {
-                foreach (var slot in chestInventory.AllSlots.Where(slot => !slot.IsEmpty))
-                {
-                    slot.ClearSlot();
-                }
-            });
+            DOTween.To(() => chestRectTransform.anchoredPosition.x,
+                x => chestRectTransform.anchoredPosition = new Vector2(x, chestRectTransform.anchoredPosition.y),
+                Metrics.DefaultChestPosition.x, 0.36f).intId = 5;
         }
-        
+
+        private void DeselectSlot()
+        {
+            SelectedSlotId = 0;
+            SelectedSlotInventory = 0;
+            playerInventory.AllSlots[0].ToggleComponent.isOn = true;
+        }
+
         /// <summary>
         /// Drops items randomly near given character
         /// </summary>
         /// <param name="characterTransform"></param>
-        /// <param name="items"></param>
-        public void DropItems(Transform characterTransform, List<Item> items)
+        /// <param name="item"></param>
+        /// <param name="count"></param>
+        public void DropItems(Transform characterTransform, Item item, int count)
         {
-            if (characterTransform == null || items == null) return;
+            if (characterTransform == null || item == null) return;
+            
+            
             
             movingSlot.ClearSlot();
             movingSlotObject.SetActive(false);
@@ -177,20 +228,21 @@ namespace Managers
                 return;
             }
 			
-            to.AddItems(from.Items);
+            to.AddItems(from.Item, from.ItemCount);
             from.UpdateSlot();
         }
 
         public void SwapItems(Slot from, Slot to)
         {
-            var tempItems = new List<Item>(to.Items);
-
+            var tempItem = to.Item;
+            var tempCount = to.ItemCount;
+            
             to.ClearSlot();
-            to.AddItems(movingSlot.Items);
+            to.AddItems(movingSlot.Item, movingSlot.ItemCount);
             to.ToggleComponent.isOn = true;
 
             from.ClearSlot();
-            from.AddItems(tempItems);
+            from.AddItems(tempItem, tempCount);
         }
 
         public void ClearMovingSlot()

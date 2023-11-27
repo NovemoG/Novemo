@@ -25,6 +25,8 @@ namespace Characters.Player
 		
 		private Inventory _inventory;
 		private InventoryManager _inventoryManager;
+
+		private Collider2D _collider;
 		
 		/// <summary>
 		/// Gives information about item added to inventory
@@ -56,6 +58,8 @@ namespace Characters.Player
 
 			_inventory = GameManager.Instance.InventoryManager.playerInventory;
 			_inventoryManager = GameManager.Instance.InventoryManager;
+
+			_collider = GetComponent<Collider2D>();
 		}
 
 		protected override void Update()
@@ -102,7 +106,7 @@ namespace Characters.Player
 
 			if (horizontalInput != 0 || verticalInput != 0)
 			{
-				var velocity = new Vector2(horizontalInput * moveSpeed, verticalInput * moveSpeed);
+				var velocity = new Vector2(horizontalInput * moveSpeed * 1.5f, verticalInput * moveSpeed * 1.5f);
                 			
 				Rigidbody2D.MovePosition(Rigidbody2D.position + velocity * Time.fixedDeltaTime);
 			}
@@ -124,26 +128,59 @@ namespace Characters.Player
 
 		private void OnTriggerEnter2D(Collider2D other)
 		{
-			_openChest = true;
-			
-			if (other.gameObject.CompareTag("Chest"))
+			if (other.CompareTag("Chest"))
 			{
-				_collidingChest = other.gameObject.GetComponent<LootChest>();
+				if (_collidingChest != null)
+				{
+					if (Vector3.Distance(other.transform.position, transform.position) >
+					    Vector3.Distance(_collidingChest.transform.position, transform.position)) return;
+					
+					_collidingChest.transform.GetChild(0).gameObject.SetActive(false);
+				}
+				
+				_collidingChest = other.GetComponent<LootChest>();
+				_collidingChest.transform.GetChild(0).gameObject.SetActive(true);
+				_openChest = true;
 			}
+		}
 
-			//TODO activate border
+		private void OnTriggerStay2D(Collider2D other)
+		{
+			if (_collidingChest == null) return;
+			
+			if (Vector3.Distance(other.transform.position, transform.position) <
+			    Vector3.Distance(_collidingChest.transform.position, transform.position))
+			{
+				_collidingChest.transform.GetChild(0).gameObject.SetActive(false);
+
+				var wasOpen = false;
+				if (_inventoryManager.ChestOpen)
+				{
+					wasOpen = true;
+					_inventoryManager.CloseChest();
+				}
+					
+				_collidingChest = other.GetComponent<LootChest>();
+				_collidingChest.transform.GetChild(0).gameObject.SetActive(true);
+				_openChest = true;
+				
+				if (wasOpen) _inventoryManager.OpenChest(_collidingChest);
+			}
 		}
 
 		private void OnTriggerExit2D(Collider2D other)
 		{
-			_openChest = false;
-			
-			if (other.gameObject.CompareTag("Chest"))
+			if (other.CompareTag("Chest"))
 			{
-				_collidingChest = other.gameObject.GetComponent<LootChest>();
+				if (other.GetComponent<LootChest>() != _collidingChest) return;
+				
+				//This also closes chest
+				if (_inventoryManager.ChestOpen) _inventoryManager.CloseVault();
+				
+				_collidingChest.transform.GetChild(0).gameObject.SetActive(false);
+				_collidingChest = null;
+				_openChest = false;
 			}
-			
-			//TODO deactivate border
 		}
 	}
 }

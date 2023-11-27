@@ -1,8 +1,10 @@
-using Characters;
+using DG.Tweening;
 using Enums;
 using Managers;
 using TMPro;
 using UnityEngine;
+using Character = Characters.Character;
+using FontStyles = TMPro.FontStyles;
 
 namespace UI
 {
@@ -15,20 +17,24 @@ namespace UI
         private TextMeshProUGUI _indicatorText;
         private Character _character;
 
-        private readonly Vector3[] _rightPath = 
+        private readonly Vector2[] _rightPath = 
         {
-            new (0.3f, 0.15f), 
-            new (0.5f, 0.35f), 
-            new (0.4f, 0.65f),
-            new (0.6f, 0),
+            new (0.2f, 0.2f), 
+            new (0.3f, 0.3f), 
+            new (0.35f, 0.35f),
+            new (0.4f, 0.4f),
+            new (0.45f, 0.35f),
+            new (0.5f, 0),
         };
         
-        private readonly Vector3[] _leftPath = 
+        private readonly Vector2[] _leftPath = 
         {
-            new (-0.3f, 0.15f), 
-            new (-0.5f, 0.35f), 
-            new (-0.4f, 0.65f),
-            new (-0.6f, 0),
+            new (-0.2f, 0.2f), 
+            new (-0.3f, 0.3f), 
+            new (-0.35f, 0.35f),
+            new (-0.4f, 0.4f),
+            new (-0.45f, 0.35f),
+            new (-0.5f, 0),
         };
 
         private bool _path;
@@ -47,9 +53,9 @@ namespace UI
             if (value < 3) return;
             _path = !_path;
 
-            var indicator = Instantiate(indicatorPrefab, transform);
+            var indicator = Instantiate(indicatorPrefab, indicatorCanvas).transform;
             
-            _indicatorText = indicator.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+            _indicatorText = indicator.GetChild(0).GetComponent<TextMeshProUGUI>();
             if (isCrit)
             {
                 _indicatorText.fontStyle = FontStyles.Bold;
@@ -61,8 +67,18 @@ namespace UI
             var scale = Mathf.Clamp(value / 500, 0.5f, 1f);
             _indicatorText.transform.localScale = new Vector3(scale, scale, scale);
 
-            LeanTween.move(indicator, _path ? _rightPath : _leftPath, 1.25f).setEase(LeanTweenType.easeOutQuad);
-            LeanTween.scale(indicator, new Vector3(1, 1, 1), 1.5f).setDestroyOnComplete(true);
+            var path = new Vector3[6];
+            for (int i = 0; i < 4; i++)
+            {
+                var charPosition = source.transform.position;
+
+                path[i] = _path ?
+                    new Vector2(charPosition.x + _rightPath[i].x, charPosition.y + _rightPath[i].y) :
+                    new Vector2(charPosition.x + _leftPath[i].x, charPosition.y + _leftPath[i].y);
+            }
+
+            indicator.DOPath(path, 1.25f);
+            indicator.DOScale(new Vector3(1, 1, 1), 1.25f).OnComplete(() => Destroy(indicator.gameObject));
         }
     }
 }

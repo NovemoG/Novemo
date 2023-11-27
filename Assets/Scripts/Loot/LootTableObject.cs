@@ -37,17 +37,14 @@ namespace Loot
 					{
 						itemCount += Random.Range(0, 100) < loot.weight * loot.maxCount / (itemCount - loot.minCount) ? 1 : 0;
 					}
-					
-					var id = UniqueId.Generate(_excludedIds, 0, Metrics.ChestSize);
 				
 					GeneratedLoot.Add(new GeneratedLoot
 					{
 						Item = loot.item,
 						Count = itemCount,
-						SlotId = id
+						SlotId = i
 					});
-				
-					_excludedIds.Add(id);
+					
 					break;
 				}
 			}

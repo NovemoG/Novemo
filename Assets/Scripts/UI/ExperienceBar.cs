@@ -1,3 +1,5 @@
+using DG.Tweening;
+
 namespace UI
 {
     public class ExperienceBar : Bar
@@ -11,11 +13,11 @@ namespace UI
 
         private void UpdateExperienceBar(int current, int needed, int change)
         {
-            LeanTween.cancel(TweenId);
+            DOTween.Kill(tweenId);
             
             var fillPercentage = (float)current / needed;
             
-            TweenId = LeanTween.value(slider.value, fillPercentage, 0.05f).setOnUpdate(f => slider.value = f).uniqueId;
+            DOTween.To(() => slider.value, x => slider.value = x, fillPercentage, 0.05f).intId = tweenId;
         }
     }
 }

@@ -4,10 +4,9 @@ namespace Enums
 	{
 		None = 0,
 		Common = 1,
-		Uncommon = 2,
-		Rare = 3,
-		Ultra_Rare = 4,
-		Legendary = 5,
-		Mythic = 6
+		Rare = 2,
+		Epic = 3,
+		Legendary = 4,
+		Mythic = 5
 	}
 }

@@ -193,7 +193,6 @@ namespace Characters
         protected virtual void Awake()
         {
             Rigidbody2D = GetComponent<Rigidbody2D>();
-            Rigidbody2D.bodyType = RigidbodyType2D.Kinematic;
 
             SpriteRenderer = GetComponent<SpriteRenderer>();
         }

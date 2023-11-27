@@ -8,31 +8,21 @@ onBoardingDoNotAskAgain = true
 showPackageIndexes = false
 showStatusBar = false
 scopes = {
-	"picker_window_position_offset.0B486DF2" = "24;37;320;550"
+	"picker_window_position_offset.0B486DF2" = "-27;343;320;550"
 	"picker_search_text.0B486DF2" = ""
 	"last_search.0B486DF2" = ""
 	"OpenInspectorPreview.0B486DF2" = "0"
 	"currentGroup.0B486DF2" = null
 }
 providers = {
-	log = {
-		active = false
-		priority = 210
+	asset = {
+		active = true
+		priority = 25
 		defaultAction = null
 	}
 	store = {
 		active = true
 		priority = 100
-		defaultAction = null
-	}
-	performance = {
-		active = false
-		priority = 100
-		defaultAction = null
-	}
-	asset = {
-		active = true
-		priority = 25
 		defaultAction = null
 	}
 	scene = {
@@ -58,6 +48,16 @@ providers = {
 	packages = {
 		active = true
 		priority = 90
+		defaultAction = null
+	}
+	performance = {
+		active = false
+		priority = 100
+		defaultAction = null
+	}
+	log = {
+		active = false
+		priority = 210
 		defaultAction = null
 	}
 	presets_provider = {

@@ -60,7 +60,6 @@ namespace Inventories
             foreach (var slot in AllSlots)
             {
                 if (slot.IsEmpty) freeSlots--;
-                
                 if (slot.AddItem(item)) return true;
             }
 
@@ -71,31 +70,14 @@ namespace Inventories
         /// Adds multiple items to inventory from provided list while simultaneously removing items one by one from provided list 
         /// </summary>
         /// <returns>List of items that left which couldn't be added</returns>
-        public virtual List<Item> AddItems(List<Item> items)
-        {
-            var count = items.Count;
-            
-            for (int i = 0; i < count; i++)
-            {
-                if (!AddItem(items[0])) break;
-                items.RemoveAt(0);
-            }
-
-            return items;
-        }
-        
-        /// <summary>
-        /// Adds provided item to inventory multiple times
-        /// </summary>
-        /// <returns>Number of items that couldn't be added</returns>
         public virtual int AddItems(Item item, int count)
         {
-            for (int i = 0; i < count; i++)
+            while (count > 0)
             {
                 if (!AddItem(item)) break;
                 count--;
             }
-            
+
             return count;
         }
 
@@ -105,15 +87,35 @@ namespace Inventories
         /// <returns>A boolean value that represents whether the provided item was successfully removed</returns>
         public virtual bool RemoveItem(Item item)
         {
-            bool wasRemoved = false;
+            var wasRemoved = false;
             
             foreach (var slot in AllSlots)
             {
-                if (slot.Peek != item) continue;
+                if (slot.Item != item) continue;
                 
                 wasRemoved = slot.RemoveItem();
 
-                if (wasRemoved && slot.IsEmpty) freeSlots++;
+                if (slot.IsEmpty) freeSlots++;
+            }
+
+            return wasRemoved;
+        }
+        
+        /// <summary>
+        /// Removes one item with given id from inventory
+        /// </summary>
+        /// <returns>A boolean value that represents whether the provided item was successfully removed</returns>
+        public virtual bool RemoveItem(int referenceId)
+        {
+            var wasRemoved = false;
+            
+            foreach (var slot in AllSlots)
+            {
+                if (slot.Item.ReferenceId != referenceId) continue;
+                
+                wasRemoved = slot.RemoveItem();
+
+                if (slot.IsEmpty) freeSlots++;
             }
 
             return wasRemoved;
@@ -125,7 +127,7 @@ namespace Inventories
         /// <returns>A boolean value that represents whether function removed items or it is not possible to do so</returns>
         public virtual int RemoveItems(Item item, int count)
         {
-            for (int i = 0; i < count; i++)
+            while (count > 0)
             {
                 if (!RemoveItem(item)) break;
                 count--;
@@ -133,11 +135,26 @@ namespace Inventories
 
             return count;
         }
+        
+        /// <summary>
+        /// Removes multiple items with given id from inventory
+        /// </summary>
+        /// <returns>A boolean value that represents whether function removed items or it is not possible to do so</returns>
+        public virtual int RemoveItems(int referenceId, int count)
+        {
+            while (count > 0)
+            {
+                if (!RemoveItem(referenceId)) break;
+                count--;
+            }
+
+            return count;
+        }
 
         /// <summary>
-        /// Only works if used on a vault
+        /// Only works if used on a vault inventory
         /// </summary>
-        public void AddSlots(int count)
+        public void AddVaultSlots(int count)
         {
             if (gameObject.name != "Vault") return;
 

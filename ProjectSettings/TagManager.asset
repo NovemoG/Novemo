@@ -4,8 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Inventory
   - Slot
+  - Inventory
   - Chest
   layers:
   - Default
@@ -44,18 +44,30 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Ground
+    uniqueID: 4018424675
+    locked: 0
+  - name: InteractableTile
+    uniqueID: 52369917
+    locked: 0
+  - name: InteractableEntity
+    uniqueID: 3842453291
+    locked: 0
+  - name: Enemy
+    uniqueID: 2632277637
+    locked: 0
   - name: Player
-    uniqueID: 633254111
+    uniqueID: 1822688849
     locked: 0
-  - name: Entities
-    uniqueID: 3196885043
+  - name: Boss
+    uniqueID: 1444796901
     locked: 0
-  - name: Collectable
-    uniqueID: 2596863331
+  - name: Weapon
+    uniqueID: 1836817589
     locked: 0
-  - name: Interactable
-    uniqueID: 3346950111
+  - name: Projectile
+    uniqueID: 1864000107
     locked: 0
-  - name: Special
-    uniqueID: 4098092965
+  - name: Indicators
+    uniqueID: 2219702931
     locked: 0

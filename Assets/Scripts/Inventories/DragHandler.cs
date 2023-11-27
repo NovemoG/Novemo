@@ -1,16 +1,13 @@
-using System.Collections.Generic;
 using System.Linq;
 using Inventories.Slots;
-using Items;
 using Managers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Inventories
 {
-	public class
-		DragHandler : MonoBehaviour, IDragHandler, IBeginDragHandler,
-			IEndDragHandler /*, IInitializePotentialDragHandler*/
+	[RequireComponent(typeof(Slot))]
+	public class DragHandler : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler/*, IInitializePotentialDragHandler*/
 	{
 		private InventoryManager _inventoryManager;
 		private Transform _playerTransform;
@@ -24,24 +21,15 @@ namespace Inventories
 			_playerTransform = GameManager.Instance.PlayerManager.playerObject.transform;
 			_movingObject = _inventoryManager.movingSlotObject;
 			_movingSlot = _inventoryManager.movingSlot;
+			_startingSlot = GetComponent<Slot>();
 		}
 
 		public void OnBeginDrag(PointerEventData eventData)
 		{
-			foreach (var current in eventData.hovered.Where(current => current.name == "Slot"))
-			{
-				_startingSlot = current.GetComponent<Slot>();
-
-				if (_startingSlot.IsEmpty)
-				{
-					_startingSlot = null;
-					return;
-				}
-
-				_movingSlot.AddItems(new List<Item>(_startingSlot.Items));
-				_movingObject.SetActive(true);
-				return;
-			}
+			if (_startingSlot.IsEmpty) return;
+			
+			_movingSlot.AddItems(_startingSlot.Item,_startingSlot.ItemCount);
+			_movingObject.SetActive(true);
 		}
 
 		public void OnDrag(PointerEventData eventData)
@@ -51,15 +39,12 @@ namespace Inventories
 
 		public void OnEndDrag(PointerEventData eventData)
 		{
-			if (_startingSlot == null) return;
-			
 			//If user is not hovering over any ui related to inventory, drop items
 			if (eventData.hovered.Count == 0 || !eventData.hovered.Any(gObject => gObject.CompareTag("Inventory")))
 			{
 				_startingSlot.ClearSlot();
-				_startingSlot = null;
 				
-				_inventoryManager.DropItems(_playerTransform, _movingSlot.Items);
+				_inventoryManager.DropItems(_playerTransform, _movingSlot.Item, _movingSlot.ItemCount);
 				return;
 			}
 
@@ -72,7 +57,7 @@ namespace Inventories
 
 			var currentSlot = current.GetComponent<Slot>();
 
-			if (currentSlot.Peek == _startingSlot.Peek)
+			if (currentSlot.Item == _startingSlot.Item)
 			{
 				_inventoryManager.MergeStacks(_startingSlot, currentSlot);
 			}
@@ -80,8 +65,7 @@ namespace Inventories
 			{
 				_inventoryManager.SwapItems(_startingSlot, currentSlot);
 			}
-
-			_startingSlot = null;
+			
 			_inventoryManager.ClearMovingSlot();
 		}
 
