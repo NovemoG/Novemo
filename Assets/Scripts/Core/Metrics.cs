@@ -11,8 +11,11 @@ namespace Core
         
         public static Vector2 DefaultChestPosition = new(215.5f, -445);
         public static Vector2 TargetChestPosition = new(-803.5f, -445);
+
+        public static Vector2 DefaultEquipmentPosition = new(500, -432);
+        public static Vector2 TargetEquipmentPosition = new(-493, -432);
         
-        public const int CurrentTweenId = 5;
+        public const int CurrentTweenId = 6;
         
         public const int ChestSize = 40;
     }

@@ -42,17 +42,25 @@ namespace Characters.Player
 		protected override void Awake()
 		{
 			base.Awake();
-			
-			CharacterStats["Health"].AddFlat(45);
-			CharacterStats["Mana"].AddFlat(23);
-			CharacterStats["Health Regen"].AddFlat(0.2f);
-			CharacterStats["Mana Regen"].AddFlat(0.2f);
-			CharacterStats["Physical Attack"].AddFlat(9);
-			CharacterStats["Ability Power"].AddFlat(7);
-			CharacterStats["Attack Speed"].AddFlat(0.75f);
-			CharacterStats["Armor"].AddFlat(9);
-			CharacterStats["Magic Resist"].AddFlat(10);
-			CharacterStats["Movement Speed"].AddFlat(1);
+
+			for (var i = 0; i < stats.Count; i++)
+			{
+				var stat = stats[i];
+				stat.StatsList = GameManager.Instance.InventoryManager.statsList;
+				stat.StatsList.stats[i].UpdateText(0, 0, 0);
+				stat.StatsList.stats[i].statIndex = i;
+			}
+
+			stats[0].AddFlat(45);
+			stats[1].AddFlat(23);
+			stats[2].AddFlat(0.2f);
+			stats[3].AddFlat(0.2f);
+			stats[4].AddFlat(9);
+			stats[5].AddFlat(7);
+			stats[7].AddFlat(0.75f);
+			stats[10].AddFlat(9);
+			stats[11].AddFlat(10);
+			stats[12].AddFlat(1.25f);
 
 			LevelUp += UpdateLevelText;
 
@@ -105,7 +113,7 @@ namespace Characters.Player
 
 			if (horizontalInput != 0 || verticalInput != 0)
 			{
-				var moveSpeed = CharacterStats["Movement Speed"].Value;
+				var moveSpeed = stats[12].Value;
 				
 				var velocity = new Vector2(horizontalInput * moveSpeed * 1.5f, verticalInput * moveSpeed * 1.5f);
                 			
@@ -143,11 +151,20 @@ namespace Characters.Player
 				_collidingChest.transform.GetChild(0).gameObject.SetActive(true);
 				_openChest = true;
 			}
+			else if (other.CompareTag("ItemDrop"))
+			{
+				var drop = other.GetComponent<ItemDrop>();
+				
+				drop.Count = _inventory.AddItems(drop.Item, drop.Count);
+
+				//TODO display inventory full
+			}
 		}
 
 		private void OnTriggerStay2D(Collider2D other)
 		{ 
 			if (_collidingChest == null) return;
+			if (!other.CompareTag("Chest")) return;
 			
 			if (Vector2.Distance(other.transform.position, transform.position) <
 			    Vector2.Distance(_collidingChest.transform.position, transform.position))

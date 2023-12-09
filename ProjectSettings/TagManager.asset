@@ -7,6 +7,8 @@ TagManager:
   - Slot
   - Inventory
   - Chest
+  - SlotBackground
+  - ItemDrop
   layers:
   - Default
   - TransparentFX

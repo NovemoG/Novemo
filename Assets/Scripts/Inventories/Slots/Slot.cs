@@ -8,13 +8,13 @@ using UnityEngine.UI;
 
 namespace Inventories.Slots
 {
-    [RequireComponent(typeof(TooltipHandler))]
+    [RequireComponent(typeof(SlotTooltipHandler))]
     public class Slot : MonoBehaviour
     {
-        [SerializeField] private Item item;
+        [SerializeField] protected Item item;
         public Item Item => item;
 
-        [SerializeField] private int itemCount;
+        [SerializeField] protected int itemCount;
         public int ItemCount => itemCount;
         
         public bool IsEmpty => itemCount == 0;
@@ -28,33 +28,37 @@ namespace Inventories.Slots
 
         public Toggle ToggleComponent { get; private set; }
         
-        private RectTransform _slotIconRect;
-        private InventoryManager _inventoryManager;
+        protected RectTransform SlotIconRect;
+        protected InventoryManager InventoryManager;
         
-        private int _slotTweenId;
+        protected int SlotTweenId;
         [NonSerialized] public int ParentInventoryId;
 
-        private void Awake()
+        protected virtual void Awake()
         {
-            _inventoryManager = GameManager.Instance.InventoryManager;
+            InventoryManager = GameManager.Instance.InventoryManager;
+
+            SlotIconRect = transform.GetChild(1).GetComponent<RectTransform>();
+
+            if (stackText != null)
+            {
+                ToggleComponent = GetComponent<Toggle>();
+                ToggleComponent.group = InventoryManager.inventoryToggleGroup;
+            }
             
-            ToggleComponent = GetComponent<Toggle>();
-            ToggleComponent.group = _inventoryManager.inventoryToggleGroup;
-
-            _slotIconRect = transform.GetChild(1).GetComponent<RectTransform>();
-
             ParentInventoryId = transform.parent.name switch
             {
                 "Inventory" => 0,
                 "VaultInventory" => 1,
                 "ChestInventory" => 2,
+                "EquipmentInventory" => 3,
                 _ => ParentInventoryId
             };
 
-            _slotTweenId = GetHashCode();
+            SlotTweenId = GetHashCode();
         }
 
-        public bool AddItem(Item itemToAdd)
+        public virtual bool AddItem(Item itemToAdd)
         {
             if (IsFull) return false;
             if (!IsEmpty && item != itemToAdd) return false;
@@ -76,16 +80,12 @@ namespace Inventories.Slots
 
             DOTween.Kill(6, true);
             DOTween.Sequence()
-                   .Append(_slotIconRect.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.1f))
-                   .Append(_slotIconRect.DOScale(new Vector3(1f, 1f, 1f), 0.1f)).intId = _slotTweenId;
+                   .Append(SlotIconRect.DOScale(new Vector3(1.1f, 1.1f, 1f), 0.1f))
+                   .Append(SlotIconRect.DOScale(new Vector3(1f, 1f, 1f), 0.1f)).intId = SlotTweenId;
 
             return true;
         }
-
-        /// <summary>
-        /// Adds items to a slot while simultaneously removing items one by one from provided list 
-        /// </summary>
-        /// <returns>A list of items that left which couldn't be added</returns>
+        
         public int AddItems(Item itemToAdd, int count)
         {
             while (count > 0)
@@ -97,7 +97,7 @@ namespace Inventories.Slots
             return count;
         }
 
-        public bool RemoveItem()
+        public virtual bool RemoveItem()
         {
             if (IsEmpty) return false;
             
@@ -105,8 +105,8 @@ namespace Inventories.Slots
             
             DOTween.Kill(7, true);
             DOTween.Sequence()
-                   .Append(_slotIconRect.DOScale(new Vector3(0.9f, 0.9f, 1f), 0.1f))
-                   .Append(_slotIconRect.DOScale(new Vector3(1f, 1f, 1f), 0.1f)).intId = _slotTweenId + 1;
+                   .Append(SlotIconRect.DOScale(new Vector3(0.9f, 0.9f, 1f), 0.1f))
+                   .Append(SlotIconRect.DOScale(new Vector3(1f, 1f, 1f), 0.1f)).intId = SlotTweenId + 1;
             
             UpdateSlot();
             
@@ -143,7 +143,7 @@ namespace Inventories.Slots
         /// <summary>
         /// Removes all items from given slot
         /// </summary>
-        public void ClearSlot()
+        public virtual void ClearSlot()
         {
             item = null;
             itemCount = 0;
@@ -152,9 +152,14 @@ namespace Inventories.Slots
             slotIcon.gameObject.SetActive(false);
         }
 
-        public void ToggleBorder()
+        public virtual void SetActive()
         {
-            _inventoryManager.SelectedSlotInventory = ParentInventoryId;
+            ToggleComponent.isOn = true;
+        }
+
+        public virtual void ToggleBorder()
+        {
+            InventoryManager.SelectedSlotInventory = ParentInventoryId;
             borderObject.SetActive(ToggleComponent.isOn);
         }
     }

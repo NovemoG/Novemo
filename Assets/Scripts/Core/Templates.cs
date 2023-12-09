@@ -23,14 +23,23 @@ namespace Core
 					return $"<color=#A6A6A6>{itemName}</color>";
 			}
 		}
+
+		public const string ItemTypeTooltip = "<color=#28282888><size=14><i>{0}</i></size></color>";
 		
 		/// <summary>
 		/// 0 - Item Name<br/>
 		/// 1 - Item Description<br/>
-		/// 2 - Item Count<br/>
-		/// 3 - Item Stack Limit<br/>
-		/// 4 - Item Type<br/>
+		/// 2 - Item Stack Limit<br/>
+		/// 3 - Item Type<br/>
 		/// </summary>
-		public const string ItemTooltipTemplate = "{0}\n{1}\n<size=20>Stack limit: {2}</size>\n<color=#28282888><size=14><i>{3}</i></size></color>";
+		public const string ItemTooltip = "{0}\n{1}\n<size=20>Stack limit: {2}</size>\n<color=#28282888><size=14><i>{3}</i></size></color>";
+
+		/// <summary>
+		/// 0 - Item Name<br/>
+		/// 1 - Item Description<br/>
+		/// 2 - Item Stack Limit<br/>
+		/// Rest should be created manually
+		/// </summary>
+		public const string EquipmentTooltip = "{0}\n{1}\n<size=20>Stack limit: {2}</size>\n";
 	}
 }

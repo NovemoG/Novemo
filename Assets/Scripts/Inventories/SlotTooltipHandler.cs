@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 namespace Inventories
 {
-	public class TooltipHandler : MonoBehaviour, IPointerEnterHandler, IPointerMoveHandler, IPointerExitHandler
+	public class SlotTooltipHandler : MonoBehaviour, IPointerEnterHandler, IPointerMoveHandler, IPointerExitHandler
 	{
 		private Slot _slot;
 		private RectTransform _tooltipTransform;
@@ -27,7 +27,7 @@ namespace Inventories
 				return;
 			}
 			
-			_inventoryManager.itemTooltipText.text = _slot.Item.ItemTooltip();
+			_inventoryManager.itemTooltipText.text = _slot.Item.ItemTooltip;
 			_tooltipTransform.gameObject.SetActive(true);
 		}
 

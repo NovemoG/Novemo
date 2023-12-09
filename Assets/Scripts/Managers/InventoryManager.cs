@@ -4,11 +4,14 @@ using Core;
 using DG.Tweening;
 using Inventories;
 using Inventories.Slots;
+using Inventories.Stats;
 using Items;
 using Loot;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 namespace Managers
 {
@@ -23,21 +26,30 @@ namespace Managers
         public RectTransform itemTooltipTransform;
         public TextMeshProUGUI itemTooltipText;
 
+        public RectTransform statTooltipTransform;
+        public TextMeshProUGUI statTooltipText;
+
         public RectTransform vaultRectTransform;
         public RectTransform chestRectTransform;
+        public RectTransform equipmentRectTransform;
         
+        public StatsHandler statsList;
         public Inventory playerInventory;
         public Inventory chestInventory;
         public Inventory vaultInventory;
         public EquipmentInventory equipmentInventory;
 
+        public Transform droppedItemsParent;
+        public GameObject itemDropPrefab;
+        
+        public ToggleGroup inventoryToggleGroup;
+
         [NonSerialized] public int SelectedSlotId;
         [NonSerialized] public int SelectedSlotInventory;
         
         private LootChest _currentChest;
-        
-        public Transform playerTransform;
-        public ToggleGroup inventoryToggleGroup;
+
+        private Tilemap _collisionTilemap;
 
         public bool VaultOpen { get; private set; }
         public bool ChestOpen { get; private set; }
@@ -50,6 +62,8 @@ namespace Managers
         private void Start()
         {
             movingSlotObject.SetActive(false);
+
+            _collisionTilemap = GameManager.Instance.tilemaps[1];
         }
 
         private void Update()
@@ -126,8 +140,12 @@ namespace Managers
         {
             DOTween.Kill(4);
             
+            if (EquipmentOpen) CloseEquipment();
+            
             VaultOpen = true;
             ShowTooltip = true;
+
+            vaultRectTransform.gameObject.SetActive(true);
             
             DOTween.To(() => vaultRectTransform.anchoredPosition.x,
                 x => vaultRectTransform.anchoredPosition = new Vector2(x, vaultRectTransform.anchoredPosition.y),
@@ -149,9 +167,10 @@ namespace Managers
                 DeselectSlot();
             }
             
+            //TODO set active false
             DOTween.To(() => vaultRectTransform.anchoredPosition.x,
                 x => vaultRectTransform.anchoredPosition = new Vector2(x, vaultRectTransform.anchoredPosition.y),
-                Metrics.DefaultVaultPosition.x, 0.21f).intId = 4;
+                Metrics.DefaultVaultPosition.x, 0.21f).OnComplete(() => vaultRectTransform.gameObject.SetActive(false)).intId = 4;
         }
 
         public void ToggleChest(LootChest chest)
@@ -165,7 +184,6 @@ namespace Managers
             DOTween.Kill(5);
             
             ChestOpen = true;
-            ShowTooltip = true;
 
             _currentChest = chest;
             foreach (var loot in _currentChest.ChestItems)
@@ -174,6 +192,8 @@ namespace Managers
             }
             
             if (!VaultOpen) OpenVault();
+
+            chestRectTransform.gameObject.SetActive(true);
             
             DOTween.To(() => chestRectTransform.anchoredPosition.x,
                 x => chestRectTransform.anchoredPosition = new Vector2(x, chestRectTransform.anchoredPosition.y),
@@ -185,7 +205,6 @@ namespace Managers
             DOTween.Kill(5);
             
             ChestOpen = false;
-            ShowTooltip = false;
 
             _currentChest.ChestItems = new List<GeneratedLoot>();
             
@@ -212,22 +231,46 @@ namespace Managers
 
             DOTween.To(() => chestRectTransform.anchoredPosition.x,
                 x => chestRectTransform.anchoredPosition = new Vector2(x, chestRectTransform.anchoredPosition.y),
-                Metrics.DefaultChestPosition.x, 0.36f).intId = 5;
+                Metrics.DefaultChestPosition.x, 0.36f).OnComplete(() => chestRectTransform.gameObject.SetActive(false)).intId = 5;
         }
         
         private void ToggleEquipment()
         {
-            throw new NotImplementedException();
+            if (EquipmentOpen) CloseEquipment();
+            else OpenEquipment();
         }
 
         public void CloseEquipment()
         {
+            DOTween.Kill(6);
+
+            if (SelectedSlotInventory == 3)
+            {
+                ClearMovingSlot();
+                SelectedSlotInventory = 0;
+            }
             
+            EquipmentOpen = false;
+            ShowTooltip = false;
+            
+            DOTween.To(() => equipmentRectTransform.anchoredPosition.x,
+                x => equipmentRectTransform.anchoredPosition = new Vector2(x, equipmentRectTransform.anchoredPosition.y),
+                Metrics.DefaultEquipmentPosition.x, 0.25f).OnComplete(() => equipmentRectTransform.gameObject.SetActive(false)).intId = 6;
         }
         
         public void OpenEquipment()
         {
+            DOTween.Kill(6);
             
+            if (VaultOpen) CloseVault();
+
+            equipmentRectTransform.gameObject.SetActive(true);
+            EquipmentOpen = true;
+            ShowTooltip = true;
+            
+            DOTween.To(() => equipmentRectTransform.anchoredPosition.x,
+                x => equipmentRectTransform.anchoredPosition = new Vector2(x, equipmentRectTransform.anchoredPosition.y),
+                Metrics.TargetEquipmentPosition.x, 0.25f).intId = 6;
         }
 
         private void DeselectSlot()
@@ -240,14 +283,25 @@ namespace Managers
         /// <summary>
         /// Drops items randomly near given character
         /// </summary>
-        /// <param name="characterTransform"></param>
+        /// <param name="entityPosition"></param>
         /// <param name="item"></param>
         /// <param name="count"></param>
-        public void DropItems(Transform characterTransform, Item item, int count)
+        public void DropItems(Vector3 entityPosition, Item item, int count)
         {
-            if (characterTransform == null || item == null) return;
+            if (item == null) return;
+
+            Vector3 dropPosition;
             
-            
+            do
+            {
+                var angle = Random.Range(0, Mathf.PI * 2);
+                dropPosition = entityPosition + new Vector3(Mathf.Sin(angle), Mathf.Cos(angle), 0);
+                
+            } while (_collisionTilemap.GetTile(_collisionTilemap.WorldToCell(dropPosition)) != null);
+
+            var dropInstance = Instantiate(itemDropPrefab, dropPosition, new Quaternion(), droppedItemsParent).GetComponent<ItemDrop>();
+            dropInstance.Item = item;
+            dropInstance.Count = count;
             
             movingSlot.ClearSlot();
             movingSlotObject.SetActive(false);
@@ -272,7 +326,7 @@ namespace Managers
             
             to.ClearSlot();
             to.AddItems(movingSlot.Item, movingSlot.ItemCount);
-            to.ToggleComponent.isOn = true;
+            to.SetActive();
 
             from.ClearSlot();
             from.AddItems(tempItem, tempCount);

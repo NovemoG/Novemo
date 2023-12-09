@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Enums;
+using Inventories.Stats;
 using UnityEngine;
 
 namespace Stats
@@ -8,14 +10,14 @@ namespace Stats
     [Serializable]
     public class Stat
     {
-        public Stat(string name, float baseValue)
+        public Stat(StatName name, float baseValue)
         {
             statName = name;
             this.baseValue = baseValue;
             bonusValues = new List<StatBonus>();
         }
         
-        [SerializeField] private string statName;
+        [SerializeField] private StatName statName;
         /// <summary>
         /// Base value of a stat that is mostly used for bonus value calculations.
         /// </summary>
@@ -25,7 +27,7 @@ namespace Stats
         /// </summary>
         [SerializeField] private List<StatBonus> bonusValues;
         
-        public string StatName => statName;
+        public StatName StatName => statName;
         public float BaseValue => baseValue;
 
         public float BonusValue()
@@ -50,6 +52,8 @@ namespace Stats
             return 0;
         }
 
+        [NonSerialized] public StatsHandler StatsList;
+
         /// <summary>
         /// Adds bonus value to a BonusValues collection. Value by which base should be modified (notation: .value).
         /// </summary>
@@ -58,6 +62,7 @@ namespace Stats
         public void AddBonus(string name, float value)
         {
             bonusValues.Add(new StatBonus(name, baseValue * value, value));
+            StatsList.stats[(int)statName].UpdateText(baseValue, BonusValue(), Value);
         }
 
         /// <summary>
@@ -74,6 +79,7 @@ namespace Stats
                     i--;
                 }
             }
+            StatsList.stats[(int)statName].UpdateText(baseValue, BonusValue(), Value);
         }
 
         private void RecalculateBonuses()
@@ -82,6 +88,7 @@ namespace Stats
             {
                 bonusValue.Recalculate(baseValue);
             }
+            StatsList.stats[(int)statName].UpdateText(baseValue, BonusValue(), Value);
         }
 
         /// <summary>
@@ -89,6 +96,8 @@ namespace Stats
         /// </summary>
         public void AddFlat(float value)
         {
+            if (value == 0) return;
+            
             baseValue += value;
             RecalculateBonuses();
         }
@@ -98,6 +107,8 @@ namespace Stats
         /// </summary>
         public void RemoveFlat(float value)
         {
+            if (value == 0) return;
+            
             baseValue -= value;
             RecalculateBonuses();
         }

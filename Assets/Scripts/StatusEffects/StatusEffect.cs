@@ -1,37 +1,75 @@
 using Characters;
+using UnityEngine;
 
 namespace StatusEffects
 {
-	public class StatusEffect
+	public class StatusEffect : ScriptableObject
 	{
-		public int Id;
+		//TODO fix this
+		[HideInInspector] public int id;
+		[HideInInspector] public bool paused;
+		[HideInInspector] public Character character;
 		
-		public readonly string EffectName;
-		public readonly bool CanStack;
-
-		protected readonly Character Character;
+		[SerializeField] protected string effectDescription;
+		[SerializeField] protected EffectDetails effectDetails;
+		
 		protected int TickCount;
-		
-		protected StatusEffect(Character character, string effectName, float seconds, bool canStack)
+		protected int TickDelay;
+		protected int EffectLength;
+		protected float EffectStrength;
+		public bool CanStack { get; private set; }
+		public string EffectName { get; private set; }
+		public virtual string FormattedDescription
 		{
-			Character = character;
-			EffectName = effectName;
-			TickCount = (int)(seconds * 50);
-			CanStack = canStack;
+			get
+			{
+				var value = string.Format(effectDescription);
+
+				return value + GetEffectLength;
+			}
 		}
 
-		public virtual void Tick()
+		protected string GetEffectLength => effectDetails.seconds < 0
+				? "<color=#282828><size=20>Length: <b>Infinite</b></size></color>"
+				: $"<color=#282828><size=20>Length: {effectDetails.seconds}s</size></color>";
+
+		protected virtual void OnEnable()
 		{
+			if (effectDetails.seconds < 0)
+			{
+				TickCount = EffectLength = -1;
+			}
+			else
+			{
+				TickCount = EffectLength = (int)(effectDetails.seconds * 50);
+			}
+			
+			TickDelay = effectDetails.tickDelay;
+			CanStack = effectDetails.canStack;
+			EffectName = effectDetails.effectName;
+			EffectStrength = effectDetails.effectStrength;
+		}
+
+		public void Tick()
+		{
+			if (paused) return;
 			if (TickCount == 0)
 			{
-				EffectEnd();
+				EndEffect();
 				
-				Character.EffectsController.RemoveEffect(Id);
+				character.EffectsController.RemoveEffect(id);
 			}
 			
 			TickCount -= 1;
+
+			if (TickCount == TickDelay) OnTick();
 		}
 
-		public virtual void EffectEnd() { }
+		public virtual void OnTick() { }
+		
+		public virtual void EndEffect()
+		{
+			TickCount = 0;
+		}
 	}
 }

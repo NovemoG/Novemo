@@ -1137,7 +1137,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.6, y: 0.9, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7069289136686122282}
@@ -1187,7 +1187,7 @@ SpriteRenderer:
   m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.8962264, g: 0.8962264, b: 0.8962264, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1283,70 +1283,70 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats:
-  - statName: Health
-    baseValue: 45
-    bonusValues: []
-  - statName: Mana
-    baseValue: 23
-    bonusValues: []
-  - statName: Health Regen
-    baseValue: 0.2
-    bonusValues: []
-  - statName: Mana Regen
-    baseValue: 0.2
-    bonusValues: []
-  - statName: Physical Attack
-    baseValue: 9
-    bonusValues: []
-  - statName: Ability Power
-    baseValue: 7
-    bonusValues: []
-  - statName: Lethal Damage
+  - statName: 0
     baseValue: 0
     bonusValues: []
-  - statName: Attack Speed
-    baseValue: 0.75
-    bonusValues: []
-  - statName: Crit Rate
+  - statName: 1
     baseValue: 0
     bonusValues: []
-  - statName: Crit Bonus
+  - statName: 2
     baseValue: 0
     bonusValues: []
-  - statName: Armor
-    baseValue: 9
-    bonusValues: []
-  - statName: Magic Resist
-    baseValue: 10
-    bonusValues: []
-  - statName: Movement Speed
-    baseValue: 1
-    bonusValues: []
-  - statName: Cooldown Reduction
+  - statName: 3
     baseValue: 0
     bonusValues: []
-  - statName: Luck
+  - statName: 4
     baseValue: 0
     bonusValues: []
-  - statName: Exp Bonus
+  - statName: 5
     baseValue: 0
     bonusValues: []
-  - statName: Armor Penetration
+  - statName: 6
     baseValue: 0
     bonusValues: []
-  - statName: Magic Penetration
+  - statName: 7
     baseValue: 0
     bonusValues: []
-  - statName: Life Steal
+  - statName: 8
     baseValue: 0
     bonusValues: []
-  - statName: Ability Vampirism
+  - statName: 9
     baseValue: 0
     bonusValues: []
-  - statName: Counter Chance
+  - statName: 10
     baseValue: 0
     bonusValues: []
-  - statName: Double Attack Chance
+  - statName: 11
+    baseValue: 0
+    bonusValues: []
+  - statName: 12
+    baseValue: 0
+    bonusValues: []
+  - statName: 13
+    baseValue: 0
+    bonusValues: []
+  - statName: 14
+    baseValue: 0
+    bonusValues: []
+  - statName: 15
+    baseValue: 0
+    bonusValues: []
+  - statName: 16
+    baseValue: 0
+    bonusValues: []
+  - statName: 17
+    baseValue: 0
+    bonusValues: []
+  - statName: 18
+    baseValue: 0
+    bonusValues: []
+  - statName: 19
+    baseValue: 0
+    bonusValues: []
+  - statName: 20
+    baseValue: 0
+    bonusValues: []
+  - statName: 21
     baseValue: 0
     bonusValues: []
   level: 1

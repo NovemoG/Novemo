@@ -5,21 +5,23 @@ namespace Items
     [Serializable]
     public class Tag
     {
-        public readonly string tagName;
-        public readonly int intValue;
-        public readonly string stringValue;
+        public readonly string TagName;
+        public readonly int IntValue;
+        public readonly string StringValue;
 
         public Tag(string tagName, int intValue, string stringValue)
         {
-            this.tagName = tagName;
-            this.intValue = intValue;
-            this.stringValue = stringValue;
+            TagName = tagName;
+            IntValue = intValue;
+            StringValue = stringValue;
         }
 
         #region Equality override
         
         public static bool operator == (Tag tag1, Tag tag2)
         {
+            if (ReferenceEquals(null, tag1)) return true;
+            
             return tag1!.Equals(tag2);
         }
 
@@ -30,7 +32,7 @@ namespace Items
         
         protected bool Equals(Tag other)
         {
-            return tagName == other.tagName && intValue == other.intValue && stringValue == other.stringValue;
+            return TagName == other.TagName && IntValue == other.IntValue && StringValue == other.StringValue;
         }
 
         public override bool Equals(object obj)
@@ -42,7 +44,7 @@ namespace Items
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(tagName, intValue, stringValue);
+            return HashCode.Combine(TagName, IntValue, StringValue);
         }
         
         #endregion

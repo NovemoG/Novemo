@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using DG.Tweening;
 using Inventories.Slots;
 using Managers;
@@ -7,13 +7,13 @@ using UnityEngine.EventSystems;
 
 namespace Inventories
 {
-	[RequireComponent(typeof(Slot))]
-	public class DragHandler : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler/*, IInitializePotentialDragHandler*/
+	[RequireComponent(typeof(EquipmentSlot))]
+	public class EquipmentDragHandler : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 	{
 		private InventoryManager _inventoryManager;
+		private EquipmentSlot _startingSlot;
 		private Transform _playerTransform;
 		private GameObject _movingObject;
-		private Slot _startingSlot;
 		private Slot _movingSlot;
 
 		private void Awake()
@@ -22,15 +22,16 @@ namespace Inventories
 			_playerTransform = GameManager.Instance.PlayerManager.playerObject.transform;
 			_movingObject = _inventoryManager.movingSlotObject;
 			_movingSlot = _inventoryManager.movingSlot;
-			_startingSlot = GetComponent<Slot>();
+			_startingSlot = GetComponent<EquipmentSlot>();
 		}
 
+		
 		public void OnBeginDrag(PointerEventData eventData)
 		{
 			if (_startingSlot.IsEmpty) return;
-			
-			_movingSlot.AddItems(_startingSlot.Item,_startingSlot.ItemCount);
-			_startingSlot.ToggleComponent.isOn = true;
+
+			_inventoryManager.SelectedSlotInventory = 3;
+			_movingSlot.AddItem(_startingSlot.Item);
 			_movingObject.SetActive(true);
 		}
 
@@ -41,15 +42,14 @@ namespace Inventories
 
 		public void OnEndDrag(PointerEventData eventData)
 		{
-			if (_startingSlot.IsEmpty) return;
-			if (_inventoryManager.SelectedSlotInventory != _startingSlot.ParentInventoryId) return;
+			if (_startingSlot.IsEmpty || _inventoryManager.movingSlot.IsEmpty) return;
 			
 			//If user is not hovering over any ui related to inventory, drop items
 			if (eventData.hovered.Count == 0 || !eventData.hovered.Any(gObject => gObject.CompareTag("Inventory")))
 			{
-				_startingSlot.ClearSlot();
+				_startingSlot.RemoveItem();
 				
-				_inventoryManager.DropItems(_playerTransform, _movingSlot.Item, _movingSlot.ItemCount);
+				_inventoryManager.DropItems(_playerTransform.position, _movingSlot.Item, _movingSlot.ItemCount);
 				return;
 			}
 
@@ -62,27 +62,34 @@ namespace Inventories
 
 			var currentSlot = current.GetComponent<Slot>();
 
-			if (currentSlot.Item == _startingSlot.Item)
+			if (currentSlot.IsEmpty)
 			{
-				_inventoryManager.MergeStacks(_startingSlot, currentSlot);
+				var tmpItem = _startingSlot.Item;
+				
+				_startingSlot.RemoveItem();
+				currentSlot.AddItem(tmpItem);
 			}
 			else
 			{
-				_inventoryManager.SwapItems(_startingSlot, currentSlot);
+				if (!_startingSlot.CanAdd(currentSlot.Item))
+				{
+					_inventoryManager.ClearMovingSlot();
+					return;
+				}
+				
+				var tmpItem = _startingSlot.Item;
+				
+				_startingSlot.RemoveItem();
+				_startingSlot.AddItem(currentSlot.Item);
+
+				currentSlot.ClearSlot();
+				if (tmpItem != null)
+				{
+					currentSlot.AddItem(tmpItem);
+				}
 			}
-
-			DOTween.Kill(6, true);
-			DOTween.Kill(7, true);
-
-			_startingSlot.ToggleComponent.interactable = false;
-			_startingSlot.ToggleComponent.interactable = true;
 			
 			_inventoryManager.ClearMovingSlot();
 		}
-
-		/*public void OnInitializePotentialDrag(PointerEventData eventData)
-		{
-		    eventData.useDragThreshold = false;
-		}*/
 	}
 }

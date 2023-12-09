@@ -11,12 +11,7 @@ namespace Stats
 
 		private void Reset()
 		{
-			var temp = PlayerStatsList.StatsPattern;
-
-			foreach (var stat in temp)
-			{
-				stats.Add(stat.Value);
-			}
+			stats = StatsListPattern.StatsPattern;
 		}
 	}
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace Managers
 {
@@ -19,6 +20,8 @@ namespace Managers
 		public AudioManager AudioManager { get; private set; }
 
 		public Camera mainCamera;
+
+		public Tilemap[] tilemaps;
 
 		private void Awake()
 		{

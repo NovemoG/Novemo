@@ -1,31 +1,35 @@
 using System.Collections.Generic;
+using Enums;
 using Stats;
 
 namespace Core.Patterns
 {
 	public static class StatsListPattern
 	{
-		public static readonly List<Stat> StatsPattern = new(){
-			new Stat("Health", 0),
-			new Stat("Mana", 0),
-			new Stat("Physical Attack", 0),
-			new Stat("Ability Power", 0),
-			new Stat("Lethal Damage", 0),
-			new Stat("Attack Speed", 0),
-			new Stat("Crit Rate", 0),
-			new Stat("Crit Bonus", 0),
-			new Stat("Armor", 0),
-			new Stat("Magic Resistance", 0),
-			new Stat("Movement Speed", 0),
-			new Stat("Cooldown Reduction", 0),
-			new Stat("Luck", 0),
-			new Stat("Exp Bonus", 0),
-			new Stat("Armor Penetration", 0),
-			new Stat("Magic Penetration", 0),
-			new Stat("Life Steal", 0),
-			new Stat("Ability Vampirism", 0),
-			new Stat("Counter Chance", 0),
-			new Stat("Double Attack Chance", 0)
+		public static readonly List<Stat> StatsPattern = new()
+		{
+			new Stat(StatName.Health, 0),
+			new Stat(StatName.Mana, 0),
+			new Stat(StatName.Health_Regen, 0),
+			new Stat(StatName.Mana_Regen, 0),
+			new Stat(StatName.Physical_Attack, 0),
+			new Stat(StatName.Ability_Power, 0),
+			new Stat(StatName.Lethal_Damage, 0),
+			new Stat(StatName.Attack_Speed, 0),
+			new Stat(StatName.Crit_Rate, 0),
+			new Stat(StatName.Crit_Bonus, 0),
+			new Stat(StatName.Armor, 0),
+			new Stat(StatName.Magic_Resist, 0),
+			new Stat(StatName.Movement_Speed, 0),
+			new Stat(StatName.Cooldown_Reduction, 0),
+			new Stat(StatName.Luck, 0),
+			new Stat(StatName.Exp_Bonus, 0),
+			new Stat(StatName.Armor_Penetration, 0),
+			new Stat(StatName.Magic_Resist_Penetration, 0),
+			new Stat(StatName.Life_Steal, 0),
+			new Stat(StatName.Ability_Vampirism, 0),
+			new Stat(StatName.Counter_Chance, 0),
+			new Stat(StatName.Double_Attack_Chance, 0)
 		};
 	}
 }

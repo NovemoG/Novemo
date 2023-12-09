@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Core;
 using Core.Patterns;
 using Enums;
@@ -23,21 +22,40 @@ namespace Characters
 
         private void OnValidate()
         {
-            CharacterStats = PlayerStatsList.StatsPattern;
-            EffectsController = GetComponent<StatusEffectController>();
-
-            stats.Clear();
+            stats = StatsListPattern.StatsPattern;
             
-            foreach (var stat in CharacterStats)
-            {
-                stats.Add(stat.Value);
-            }
+            EffectsController = GetComponent<StatusEffectController>();
         }
         
-        [SerializeField] protected List<Stat> stats;
-
         /// <summary>
-        /// Percentage values are represented by this notation: .value<br/>
+        /// Percentage values are represented by this notation: 0.value<br/>
+        /// Stats in order:<br/>
+        /// 0 - Health<br/>
+        /// 1 - Mana<br/>
+        /// 2 - Health Regen<br/>
+        /// 3 - Mana Regen<br/>
+        /// 4 - Physical Attack<br/>
+        /// 5 - Ability Power<br/>
+        /// 6 - Lethal Damage (Percentage, applied to every type of damage, can't crit, can't apply any effects)<br/>
+        /// 7 - Attack Speed (Attacks/second)<br/>
+        /// 8 - Crit Rate (Percentage)<br/>
+        /// 9 - Crit Bonus (Percentage)<br/>
+        /// 10 - Armor<br/>
+        /// 11 - Magic Resist<br/>
+        /// 12 - Movement Speed (Tiles/second)<br/>
+        /// 13 - Cooldown Reduction (Percentage)<br/>
+        /// 14 - Luck (Percentage)<br/>
+        /// 15 - Exp Bonus (Percentage)<br/>
+        /// 16 - Armor Penetration<br/>
+        /// 17 - Magic Penetration<br/>
+        /// 18 - Life Steal<br/>
+        /// 19 - Ability Vampirism<br/>
+        /// 20 - Counter Chance (Percentage, while blocking)<br/>
+        /// 21 - Double Attack Chance (Percentage)
+        /// </summary>
+        [ListElementTitle("statName")] [SerializeField] protected List<Stat> stats;
+        /// <summary>
+        /// Percentage values are represented by this notation: 0.value<br/>
         /// Stats in order:<br/>
         /// 0 - Health<br/>
         /// 1 - Mana<br/>
@@ -62,20 +80,18 @@ namespace Characters
         /// 20 - Counter Chance (Percentage, while blocking)<br/>
         /// 21 - Double Attack Chance (Percentage)
         /// </summary>
-        protected Dictionary<string, Stat> CharacterStats;
+        public List<Stat> Stats => stats;
         
-        public ReadOnlyCollection<Stat> Stats => stats.AsReadOnly();
-        
-        public float MaxHealth => CharacterStats["Health"].Value;
+        public float MaxHealth => stats[0].Value;
         public float CurrentHealth { get; private set; }
-        public float HealthRegen => CharacterStats["Health Regen"].Value;
+        public float HealthRegen => stats[2].Value;
 
-        public float MaxMana => CharacterStats["Mana"].Value;
+        public float MaxMana => stats[1].Value;
         public float CurrentMana { get; private set; }
-        public float ManaRegen => CharacterStats["Mana Regen"].Value;
+        public float ManaRegen => stats[3].Value;
 
         #endregion
-
+        
         #region Events
 
         /// <summary>
@@ -111,7 +127,7 @@ namespace Characters
         /// <summary>
         /// Function used to change character's health value. To decrease health use -value
         /// </summary>
-        public void InvokeHealthChange(float value)
+        private void ModifyCharacterHealth(float value)
         {
             CurrentHealth += value;
             
@@ -128,6 +144,16 @@ namespace Characters
             
             HealthChange?.Invoke(CurrentHealth, MaxHealth, value);
         }
+
+        /// <summary>
+        /// Called when character's max health changes
+        /// </summary>
+        public void UpdateHealthData()
+        {
+            CurrentHealth = Mathf.Clamp(CurrentHealth, 0, MaxHealth);
+            
+            HealthChange?.Invoke(CurrentHealth, MaxHealth, 0);
+        }
         
         /// <summary>
         /// Gives information about character's mana
@@ -138,7 +164,7 @@ namespace Characters
         /// <summary>
         /// Function used to change character's mana value. To decrease mana use -value
         /// </summary>
-        public void InvokeManaChange(float value)
+        private void ModifyCharacterMana(float value)
         {
             CurrentMana += value;
 
@@ -151,13 +177,23 @@ namespace Characters
         }
         
         /// <summary>
+        /// Called when character's max mana changes
+        /// </summary>
+        public void UpdateManaData()
+        {
+            CurrentMana = Mathf.Clamp(CurrentMana, 0, MaxMana);
+            
+            ManaChange?.Invoke(CurrentMana, MaxMana, 0);
+        }
+        
+        /// <summary>
         /// Gives information about character's health
         /// </summary>
         /// <para> Passes values (in order): Current experience; Experience needed to level up; Value by which experience was modified</para>
         public event Action<int, int, int> ExperienceChange;
         public void InvokeExpChange(int value)
         {
-            CurrentExp += (int)(value * (1 + CharacterStats["Luck"].Value));
+            CurrentExp += (int)(value * (1 + stats[14].Value));
             ExperienceChange?.Invoke(ExpNeeded, CurrentExp, value);
         }
 
@@ -187,8 +223,8 @@ namespace Characters
         
         public StatusEffectController EffectsController { get; private set; }
 
-        private Character DamageSource { get; set; }
-        private DateTime LastCombatAction { get; set; }
+        public Character DamageSource { get; set; }
+        public DateTime LastCombatAction { get; set; }
         
         protected virtual void Awake()
         {
@@ -199,16 +235,15 @@ namespace Characters
 
         protected virtual void Start()
         {
-            InvokeHealthChange(MaxHealth);
-            InvokeManaChange(MaxMana);
+            ModifyCharacterHealth(MaxHealth);
+            ModifyCharacterMana(MaxMana);
             level = level > 1 ? level : 1;
             LevelUp?.Invoke(this, level);
             
             if (HealthRegen != 0 || ManaRegen != 0)
             {
-                var regenEffect = new Regen(this);
-                    
-                EffectsController.ApplyEffect(regenEffect);
+                /*EffectsController.ApplyEffect(healthRegenEffect);
+                EffectsController.ApplyEffect(manaRegenEffect);*/
             }
         }
 
@@ -234,15 +269,15 @@ namespace Characters
         {
             if (isCrit)
             {
-                amount *= 1.5f + source.CharacterStats["Crit Chance"].Value;
+                amount *= 1.5f + source.stats[9].Value;
             }
 
             PreMitigatedDamage?.Invoke(source, type, amount, isCrit);
             
-            var lethal = amount * source.CharacterStats["Lethal Damage"].Value;
+            var lethal = amount * source.stats[6].Value;
             var defense = type == DamageType.Physical
-                ? CharacterStats["Armor"].Value * (1 - source.CharacterStats["Armor Penetration"].Value)
-                : CharacterStats["Magic Resist"].Value * (1 - source.CharacterStats["Magic Penetration"].Value);
+                ? stats[10].Value * (1 - source.stats[16].Value)
+                : stats[11].Value * (1 - source.stats[17].Value);
             var damageReduction = defense / math.pow(500 + defense, 0.97f);
             
             var final = amount * (1 - damageReduction) + lethal;
@@ -250,7 +285,7 @@ namespace Characters
             //TODO life steal/spell vampirism source heals on attack
             //source.Heal(source, source.stats[16].Value * final, false);
             
-            InvokeHealthChange(-final);
+            ModifyCharacterHealth(-final);
             DamageTaken?.Invoke(source, type, final, isCrit);
             return final;
         }
@@ -262,13 +297,13 @@ namespace Characters
                 amount *= 1.5f;
             }
             
-            InvokeHealthChange(amount);
+            ModifyCharacterHealth(amount);
             DamageTaken?.Invoke(source, DamageType.Heal, amount, isCrit);
         }
 
         public void RegenerateMana(Character source, float amount)
         {
-            InvokeManaChange(amount);
+            ModifyCharacterMana(amount);
             DamageTaken?.Invoke(source, DamageType.Mana, amount, false);
         }
     }
