@@ -2,13 +2,24 @@
 
 namespace StatusEffects.Buffs
 {
-	[CreateAssetMenu(fileName = "New Health Regen Effect", menuName = "Effects/Health Regen")]
 	public class HealthRegen : StatusEffect
 	{
+		public HealthRegen(EffectData effectData) : base(effectData)
+		{
+			effectDescription = string.Format(effectDescription, EffectStrength, Mathf.Abs((float)effectData.tickDelay / 50));
+			effectDescription += effectData.tickDelay is 5 or 50 ? " second" : " seconds";
+
+			if (effectTickLength > 0)
+			{
+				effectDescription += $" for {effectData.seconds} seconds";
+			}
+		}
+
 		public override void OnTick()
 		{
-			character.Heal(character, EffectStrength == 0 ? character.HealthRegen : EffectStrength, false);
-			TickCount = EffectLength == -1 ? -1 : TickCount;
+			base.OnTick();
+			
+			Character.Heal(Character, EffectStrength == 0 ? Character.HealthRegen : EffectStrength, false);
 		}
 	}
 }

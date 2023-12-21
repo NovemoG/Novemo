@@ -24,6 +24,8 @@ namespace Core
 			}
 		}
 
+		public const string NewLine = "<size=10>\n</size>";
+
 		public const string ItemTypeTooltip = "<color=#28282888><size=14><i>{0}</i></size></color>";
 		
 		/// <summary>

@@ -1,6 +1,7 @@
 using Characters.Player;
 using Inventories;
 using UnityEngine;
+using static Enums.ActionCode;
 
 namespace Managers
 {
@@ -22,65 +23,64 @@ namespace Managers
 		{
 			if (Input.anyKeyDown)
 			{
-				//TODO check key binds instead of keys
-				if (Input.GetKeyDown(KeyCode.Alpha1))
+				if (Item1.GetKeyDown())
 				{
-					_playerInventory.AllSlots[0].Item.Use();
+					_playerInventory.allSlots[0].Item?.Use();
 				}
 
-				if (Input.GetKeyDown(KeyCode.Alpha2))
+				if (Item2.GetKeyDown())
 				{
-					_playerInventory.AllSlots[1].Item.Use();
+					_playerInventory.allSlots[1].Item?.Use();
 				}
 
-				if (Input.GetKeyDown(KeyCode.Alpha3))
+				if (Item3.GetKeyDown())
 				{
-					_playerInventory.AllSlots[2].Item.Use();
+					_playerInventory.allSlots[2].Item?.Use();
 				}
 
-				if (Input.GetKeyDown(KeyCode.Alpha4))
+				if (Item4.GetKeyDown())
 				{
-					_playerInventory.AllSlots[3].Item.Use();
+					_playerInventory.allSlots[3].Item?.Use();
 				}
 
-				if (Input.GetKeyDown(KeyCode.Alpha5))
+				if (Item5.GetKeyDown())
 				{
-					_playerInventory.AllSlots[4].Item.Use();
+					_playerInventory.allSlots[4].Item?.Use();
 				}
 
-				if (Input.GetKeyDown(KeyCode.Alpha6))
+				if (Item6.GetKeyDown())
 				{
-					_playerInventory.AllSlots[5].Item.Use();
+					_playerInventory.allSlots[5].Item?.Use();
 				}
 
-				if (Input.GetKeyDown(KeyCode.Alpha7))
+				if (Item7.GetKeyDown())
 				{
-					_playerInventory.AllSlots[6].Item.Use();
+					_playerInventory.allSlots[6].Item?.Use();
 				}
 
-				if (Input.GetKeyDown(KeyCode.Alpha8))
+				if (Item8.GetKeyDown())
 				{
-					_playerInventory.AllSlots[7].Item.Use();
+					_playerInventory.allSlots[7].Item?.Use();
 				}
 
-				if (Input.GetKeyDown(KeyCode.Alpha9))
+				if (Item9.GetKeyDown())
 				{
-					_playerInventory.AllSlots[8].Item.Use();
+					_playerInventory.allSlots[8].Item?.Use();
 				}
 
-				if (Input.GetKeyDown(KeyCode.Alpha0))
+				if (Item10.GetKeyDown())
 				{
-					_playerInventory.AllSlots[9].Item.Use();
+					_playerInventory.allSlots[9].Item?.Use();
 				}
 
-				if (Input.GetKeyDown(KeyCode.Minus))
+				if (Item11.GetKeyDown())
 				{
-					_playerInventory.AllSlots[10].Item.Use();
+					_playerInventory.allSlots[10].Item?.Use();
 				}
 
-				if (Input.GetKeyDown(KeyCode.Equals))
+				if (Item12.GetKeyDown())
 				{
-					_playerInventory.AllSlots[11].Item.Use();
+					_playerInventory.allSlots[11].Item?.Use();
 				}
 			}
 		}

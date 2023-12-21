@@ -5,13 +5,17 @@ namespace Loot
 {
 	public class LootChest : MonoBehaviour
 	{
+		public int id;
+		
 		[SerializeField] private LootTableObject lootTable;
-		public List<GeneratedLoot> ChestItems;
+		public List<GeneratedLoot> chestItems;
 		
 		protected void Awake()
 		{
+			if (lootTable == null) return;
+			
 			lootTable.GenerateLoot();
-			ChestItems = lootTable.GeneratedLoot;
+			chestItems = lootTable.generatedLoot;
 		}
 	}
 }

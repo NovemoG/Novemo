@@ -22,9 +22,7 @@ namespace Characters
 
         private void OnValidate()
         {
-            stats = StatsListPattern.StatsPattern;
-            
-            EffectsController = GetComponent<StatusEffectController>();
+            if (stats == null) stats = StatsListPattern.StatsPattern;
         }
         
         /// <summary>
@@ -127,7 +125,7 @@ namespace Characters
         /// <summary>
         /// Function used to change character's health value. To decrease health use -value
         /// </summary>
-        private void ModifyCharacterHealth(float value)
+        protected void ModifyCharacterHealth(float value)
         {
             CurrentHealth += value;
             
@@ -164,7 +162,7 @@ namespace Characters
         /// <summary>
         /// Function used to change character's mana value. To decrease mana use -value
         /// </summary>
-        private void ModifyCharacterMana(float value)
+        protected void ModifyCharacterMana(float value)
         {
             CurrentMana += value;
 
@@ -198,29 +196,36 @@ namespace Characters
         }
 
         #endregion
-
-        public int level;
-
-        public int ExpNeeded => 4 * level.Pow(3) - 8 * level.Pow(2) + 25 * level;
-        private int _currentExp;
+        
+        [SerializeField] protected int level;
+        public int Level => level;
+        
+        [SerializeField] protected int currentExp;
         public int CurrentExp
         {
-            get => _currentExp;
-            set
+            get => currentExp;
+            private set
             {
-                _currentExp = value;
+                currentExp = value;
                 
-                while (_currentExp > ExpNeeded)
+                while (currentExp > ExpNeeded)
                 {
                     level += 1;
+                    ExpNeeded = Metrics.ExpNeededFormula(level);
                     LevelUp?.Invoke(this, level);
                 }
             }
         }
+        public int ExpNeeded { get; private set; }
+
+        [SerializeField] protected EffectData healthRegenEffect;
+        public EffectData HealthRegenEffect => healthRegenEffect;
+        
+        [SerializeField] protected EffectData manaRegenEffect;
+        public EffectData ManaRegenEffect => manaRegenEffect;
 
         protected Rigidbody2D Rigidbody2D;
         protected SpriteRenderer SpriteRenderer;
-        
         public StatusEffectController EffectsController { get; private set; }
 
         public Character DamageSource { get; set; }
@@ -229,21 +234,22 @@ namespace Characters
         protected virtual void Awake()
         {
             Rigidbody2D = GetComponent<Rigidbody2D>();
-
             SpriteRenderer = GetComponent<SpriteRenderer>();
+            EffectsController = GetComponent<StatusEffectController>();
+            
+            ExpNeeded = Metrics.ExpNeededFormula(level);
         }
 
         protected virtual void Start()
         {
-            ModifyCharacterHealth(MaxHealth);
-            ModifyCharacterMana(MaxMana);
-            level = level > 1 ? level : 1;
-            LevelUp?.Invoke(this, level);
-            
-            if (HealthRegen != 0 || ManaRegen != 0)
+            if (!EffectsController.ContainsEffect(healthRegenEffect))
             {
-                /*EffectsController.ApplyEffect(healthRegenEffect);
-                EffectsController.ApplyEffect(manaRegenEffect);*/
+                EffectsController.ApplyEffect(healthRegenEffect).Character = this;
+            }
+
+            if (!EffectsController.ContainsEffect(manaRegenEffect))
+            {
+                EffectsController.ApplyEffect(manaRegenEffect).Character = this;
             }
         }
 
@@ -251,9 +257,9 @@ namespace Characters
         {
             if (Input.anyKeyDown)
             {
-                if (Input.GetKeyDown(KeyCode.D))
+                if (Input.GetKeyDown(KeyCode.T))
                 {
-                    TakeDamage(this, DamageType.Physical, 5, false);
+                    TakeDamage(this, AttackType.Normal_Attack, DamageType.Physical, 5, false);
                 }
                 if (Input.GetKeyDown(KeyCode.H))
                 {
@@ -265,28 +271,35 @@ namespace Characters
         /// <summary>
         /// Returns damage taken
         /// </summary>
-        public float TakeDamage(Character source, DamageType type, float amount, bool isCrit)
+        public float TakeDamage(Character source, AttackType aType, DamageType dType, float amount, bool isCrit)
         {
             if (isCrit)
             {
                 amount *= 1.5f + source.stats[9].Value;
             }
 
-            PreMitigatedDamage?.Invoke(source, type, amount, isCrit);
+            PreMitigatedDamage?.Invoke(source, dType, amount, isCrit);
             
             var lethal = amount * source.stats[6].Value;
-            var defense = type == DamageType.Physical
+            var defense = dType == DamageType.Physical
                 ? stats[10].Value * (1 - source.stats[16].Value)
                 : stats[11].Value * (1 - source.stats[17].Value);
             var damageReduction = defense / math.pow(500 + defense, 0.97f);
             
             var final = amount * (1 - damageReduction) + lethal;
             
-            //TODO life steal/spell vampirism source heals on attack
-            //source.Heal(source, source.stats[16].Value * final, false);
+            if (aType == AttackType.Normal_Attack)
+            {
+                source.Heal(source, source.stats[18].Value * final, false);
+            }
+            else if (aType == AttackType.Ability) //DoTs don't heal
+            {
+                source.Heal(source, source.stats[19].Value * final, false);
+            }
             
+            DamageSource = source;
             ModifyCharacterHealth(-final);
-            DamageTaken?.Invoke(source, type, final, isCrit);
+            DamageTaken?.Invoke(source, dType, final, isCrit);
             return final;
         }
 
@@ -305,6 +318,17 @@ namespace Characters
         {
             ModifyCharacterMana(amount);
             DamageTaken?.Invoke(source, DamageType.Mana, amount, false);
+        }
+
+        public void ApplyEffect(StatusEffect effect)
+        {
+            effect.Character = this;
+            EffectsController.ApplyEffect(effect);
+        }
+
+        public void RemoveEffect(int id)
+        {
+            EffectsController.RemoveEffect(id);
         }
     }
 }

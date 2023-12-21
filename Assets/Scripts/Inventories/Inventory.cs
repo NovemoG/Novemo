@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using Core;
 using Inventories.Slots;
 using Items;
 using Managers;
+using Saves;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,36 +14,39 @@ namespace Inventories
         private InventoryManager _inventoryManager;
 
         public GameObject inventoryBackground;
-        public int rows, cols, slotCount;
+        public int rows, cols, slotCount, freeSlots;
         
-        public int freeSlots;
-        
-        [NonSerialized] public List<Slot> AllSlots;
+        [HideInInspector] public List<Slot> allSlots;
 
-        protected virtual void Awake()
+        private void Awake()
         {
             _inventoryManager = GameManager.Instance.InventoryManager;
-            AllSlots = new List<Slot>();
 
-            foreach (Transform child in transform)
+            if (allSlots.Count == 0)
             {
-                AllSlots.Add(child.GetComponent<Slot>());
-
-                freeSlots++;
+                allSlots = new List<Slot>();
+                
+                foreach (Transform child in transform)
+                {
+                    allSlots.Add(child.GetComponent<Slot>());
+                    freeSlots++;
+                }
             }
         }
 
-        protected void Start()
+        private void Start()
         {
-            //TODO load items from save file
-            
             if (gameObject.name == "Inventory")
             {
-                AllSlots[0].GetComponent<Toggle>().isOn = true;
+                allSlots[0].GetComponent<Toggle>().isOn = true;
+            }
+            else
+            {
+                transform.parent.gameObject.SetActive(false);
             }
         }
 
-        protected virtual void Update()
+        private void Update()
         {
             
         }
@@ -52,9 +55,9 @@ namespace Inventories
         /// Tries to add one item to inventory
         /// </summary>
         /// <returns>Whether the provided item was successfully added</returns>
-        public virtual bool AddItem(Item item)
+        public bool AddItem(Item item)
         {
-            foreach (var slot in AllSlots)
+            foreach (var slot in allSlots)
             {
                 if (slot.IsEmpty) freeSlots--;
                 if (slot.AddItem(item)) return true;
@@ -63,7 +66,7 @@ namespace Inventories
             return false;
         }
         
-        public virtual int AddItems(Item item, int count)
+        public int AddItems(Item item, int count)
         {
             while (count > 0)
             {
@@ -78,11 +81,11 @@ namespace Inventories
         /// Removes one item from inventory
         /// </summary>
         /// <returns>Whether the provided item was successfully removed</returns>
-        public virtual bool RemoveItem(Item item)
+        public bool RemoveItem(Item item)
         {
             var wasRemoved = false;
             
-            foreach (var slot in AllSlots)
+            foreach (var slot in allSlots)
             {
                 if (slot.Item != item) continue;
                 
@@ -98,13 +101,13 @@ namespace Inventories
         /// Removes one item with given id from inventory
         /// </summary>
         /// <returns>Whether an item with provided id was successfully removed</returns>
-        public virtual bool RemoveItem(int id)
+        public bool RemoveItem(int id)
         {
             var wasRemoved = false;
             
-            foreach (var slot in AllSlots)
+            foreach (var slot in allSlots)
             {
-                if (slot.Item.id != id) continue;
+                if (slot.Item.Id != id) continue;
                 
                 wasRemoved = slot.RemoveItem();
 
@@ -118,7 +121,7 @@ namespace Inventories
         /// Removes multiple items from inventory
         /// </summary>
         /// <returns>Count of items that were not added</returns>
-        public virtual int RemoveItems(Item item, int count)
+        public int RemoveItems(Item item, int count)
         {
             while (count > 0)
             {
@@ -133,7 +136,7 @@ namespace Inventories
         /// Removes multiple items with given id from inventory
         /// </summary>
         /// <returns>Count of items that were not added</returns>
-        public virtual int RemoveItems(int id, int count)
+        public int RemoveItems(int id, int count)
         {
             while (count > 0)
             {
@@ -142,6 +145,30 @@ namespace Inventories
             }
 
             return count;
+        }
+
+        public void LoadSaveData(InventorySaveData saveData)
+        {
+            allSlots = new List<Slot>();
+
+            var i = 0;
+            foreach (Transform child in transform)
+            {
+                var slotComponent = child.GetComponent<Slot>();
+
+                var slotData = saveData.slotsSaveData[i];
+                if (slotData.item != null)
+                {
+                    slotComponent.AddItems(slotData.item, slotData.count);
+                }
+                else
+                {
+                    freeSlots++;
+                }
+                
+                allSlots.Add(slotComponent);
+                i++;
+            }
         }
 
         /// <summary>
@@ -155,7 +182,7 @@ namespace Inventories
             {
                 var instance = Instantiate(_inventoryManager.slotPrefab, transform);
                 
-                AllSlots.Add(instance.GetComponent<Slot>());
+                allSlots.Add(instance.GetComponent<Slot>());
             }
             
             var backgroundRect = inventoryBackground.GetComponent<RectTransform>();

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Items.Consumables
 {
 	[CreateAssetMenu(fileName = "New Consumable", menuName = "Items/Consumables/Consumable")]
-	public class Consumable : Item
+	public class Consumable : ItemData
 	{
 		public int useCount;
 		/// <summary>

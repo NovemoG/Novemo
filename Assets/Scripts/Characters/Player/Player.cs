@@ -6,8 +6,11 @@ using Items;
 using Items.Equipment.Weapons;
 using Loot;
 using Managers;
+using Saves;
+using StatusEffects;
 using TMPro;
 using UnityEngine;
+using static Enums.ActionCode;
 
 namespace Characters.Player
 {
@@ -17,8 +20,6 @@ namespace Characters.Player
 		public GameObject weaponObject;
 		public Transform slashObject;
 		public Weapon weapon;
-
-		public float playerSize = 1;
 
 		private bool _openChest;
 		private LootChest _collidingChest;
@@ -35,7 +36,7 @@ namespace Characters.Player
 		public void InvokeItemCollected(Item item)
 		{
 			ItemCollected?.Invoke(item);
-			
+
 			//TODO if cant fit in inventory display little popup that asks if player wants to add collected item to vault
 		}
 
@@ -47,20 +48,26 @@ namespace Characters.Player
 			{
 				var stat = stats[i];
 				stat.StatsList = GameManager.Instance.InventoryManager.statsList;
-				stat.StatsList.stats[i].UpdateText(0, 0, 0);
+				stat.StatsList.stats[i].UpdateText(stats[i]);
 				stat.StatsList.stats[i].statIndex = i;
 			}
 
-			stats[0].AddFlat(45);
-			stats[1].AddFlat(23);
-			stats[2].AddFlat(0.2f);
-			stats[3].AddFlat(0.2f);
-			stats[4].AddFlat(9);
-			stats[5].AddFlat(7);
-			stats[7].AddFlat(0.75f);
-			stats[10].AddFlat(9);
-			stats[11].AddFlat(10);
-			stats[12].AddFlat(1.25f);
+			if (stats[0].Value == 0)
+			{
+				stats[0].ModifyFlat(45);
+				stats[1].ModifyFlat(23);
+				stats[2].ModifyFlat(0.2f);
+				stats[3].ModifyFlat(0.2f);
+				stats[4].ModifyFlat(9);
+				stats[5].ModifyFlat(7);
+				stats[7].ModifyFlat(0.75f);
+				stats[10].ModifyFlat(9);
+				stats[11].ModifyFlat(10);
+				stats[12].ModifyFlat(1.25f);
+				
+				ModifyCharacterHealth(MaxHealth);
+				ModifyCharacterMana(MaxMana);
+			}
 
 			LevelUp += UpdateLevelText;
 
@@ -76,19 +83,19 @@ namespace Characters.Player
 
 			if (Input.anyKeyDown)
 			{
-				if (Input.GetKeyDown(KeyCode.A))
-				{
-					ChangeCharacterDirection(true);
-				}
-
-				if (Input.GetKeyDown(KeyCode.D))
+				if (MoveRight.GetKeyDown())
 				{
 					ChangeCharacterDirection(false);
+				}
+
+				if (MoveLeft.GetKeyDown())
+				{
+					ChangeCharacterDirection(true);
 				}
 				
 				if (_openChest)
 				{
-					if (Input.GetKeyDown(KeyCode.C))
+					if (Chest.GetKeyDown())
 					{
 						_inventoryManager.ToggleChest(_collidingChest);
 					}
@@ -103,13 +110,30 @@ namespace Characters.Player
 
 		public void Attack(Character target)
 		{
-			target.TakeDamage(this, DamageType.Magical, 1, false);
+			target.TakeDamage(this, AttackType.Normal_Attack, DamageType.Magical, 1, false);
+		}
+
+		public void LoadSaveData(PlayerSaveData saveData)
+		{
+			level = saveData.level;
+			currentExp = saveData.currentExp;
+			UpdateLevelText(this, level);
+
+			healthRegenEffect = saveData.healthRegenEffect;
+			manaRegenEffect = saveData.manaRegenEffect;
+
+			stats = saveData.stats;
+			
+			ModifyCharacterHealth(saveData.currentHealth);
+			ModifyCharacterMana(saveData.currentMana);
+			
+			GetComponent<StatusEffectController>().LoadSaveData(saveData);
 		}
 
 		private void MovePlayer()
 		{
-			var horizontalInput = Input.GetAxisRaw("Horizontal");
-			var verticalInput = Input.GetAxisRaw("Vertical");
+			var horizontalInput = InputManager.GetAxis(Axis.Horizontal);
+			var verticalInput = InputManager.GetAxis(Axis.Vertical);
 
 			if (horizontalInput != 0 || verticalInput != 0)
 			{

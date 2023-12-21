@@ -7,29 +7,21 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc54a736da3740029594ad6f1db0f5fb, type: 3}
-  m_Name: TestEquipment
+  m_Script: {fileID: 11500000, guid: 2cdf936677ef49b29847395291dd851b, type: 3}
+  m_Name: Accessory
   m_EditorClassIdentifier: 
-  id: 0
-  itemName: Test Equipment
-  itemDescription: Test Equipment description
+  id: 1
+  itemName: Accessory
+  itemDescription: test accessory
   itemIcon: {fileID: 7482667652216324306, guid: 24beea1772b3b4332b8587f4bd0b51ab, type: 3}
   itemType: 2
   itemRarity: 2
-  stackLimit: 1
+  stackLimit: 0
+  questItem: 0
   baseSellCost: 0
   baseBuyCost: 0
   equipSlotType: 8
-  stats:
-  - statName: 0
-    baseValue: 35
-    bonusName: 
-    bonusValue: 0
-  - statName: 1
-    baseValue: 0
-    bonusName: ItemMana
-    bonusValue: 0.2
-  effects:
-  - {fileID: 11400000, guid: 9b651da5179a5e24782d129f9085585d, type: 2}
+  stats: []
+  effects: []

@@ -1,75 +1,96 @@
+using System;
 using Characters;
+using FullSerializer;
 using UnityEngine;
 
 namespace StatusEffects
 {
-	public class StatusEffect : ScriptableObject
+	[Serializable]
+	public class StatusEffect
 	{
-		//TODO fix this
-		[HideInInspector] public int id;
-		[HideInInspector] public bool paused;
-		[HideInInspector] public Character character;
-		
-		[SerializeField] protected string effectDescription;
-		[SerializeField] protected EffectDetails effectDetails;
-		
-		protected int TickCount;
-		protected int TickDelay;
-		protected int EffectLength;
-		protected float EffectStrength;
-		public bool CanStack { get; private set; }
-		public string EffectName { get; private set; }
-		public virtual string FormattedDescription
+		public StatusEffect(EffectData effectData)
 		{
-			get
+			this.effectData = effectData;
+			
+			if (effectData.seconds < 0)
 			{
-				var value = string.Format(effectDescription);
-
-				return value + GetEffectLength;
-			}
-		}
-
-		protected string GetEffectLength => effectDetails.seconds < 0
-				? "<color=#282828><size=20>Length: <b>Infinite</b></size></color>"
-				: $"<color=#282828><size=20>Length: {effectDetails.seconds}s</size></color>";
-
-		protected virtual void OnEnable()
-		{
-			if (effectDetails.seconds < 0)
-			{
-				TickCount = EffectLength = -1;
+				tickCount = effectTickLength = -1;
 			}
 			else
 			{
-				TickCount = EffectLength = (int)(effectDetails.seconds * 50);
+				tickCount = effectTickLength = (int)(effectData.seconds * 50);
 			}
+
+			effectDescription = effectData.effectDescription;
+		}
+
+		public bool paused;
+		[SerializeField] protected EffectData effectData;
+		[SerializeField] protected int id;
+		[SerializeField] protected int tickCount;
+		[SerializeField] protected int effectTickLength;
+		[SerializeField] protected string effectDescription;
+
+		[fsIgnore] public Character Character { get; set; }
+		
+		[fsIgnore] public EffectData EffectData => effectData;
+		[fsIgnore] public int Id => id;
+		[fsIgnore] public int TickDelay => effectData.tickDelay;
+		[fsIgnore] public bool CanStack => effectData.canStack;
+		[fsIgnore] public string EffectName => effectData.effectName;
+		[fsIgnore] public float EffectStrength => effectData.effectStrength;
+		[fsIgnore] public virtual string FormattedDescription => $"{effectDescription}\n{GetEffectLength}{IsStackable}";
+
+		[fsIgnore] protected string GetEffectLength => effectTickLength < 0
+				? "Length: <b>Infinite</b>"
+				: $"Length: {effectTickLength / 50}s";
+
+		[fsIgnore] protected string IsStackable => CanStack ? string.Empty : "\n<i><size=16>This effect doesn't stack</size><i>";
+
+		public void SetId(int newId)
+		{
+			if (id != 0) return;
+
+			id = newId;
+		}
+
+		public void Reset()
+		{
+			Character = null;
+			id = 0;
 			
-			TickDelay = effectDetails.tickDelay;
-			CanStack = effectDetails.canStack;
-			EffectName = effectDetails.effectName;
-			EffectStrength = effectDetails.effectStrength;
+			if (effectData.seconds < 0)
+			{
+				tickCount =  -1;
+			}
+			else
+			{
+				tickCount = (int)(effectData.seconds * 50);
+			}
 		}
 
 		public void Tick()
 		{
-			if (paused) return;
-			if (TickCount == 0)
+			if (tickCount == 0)
 			{
 				EndEffect();
-				
-				character.EffectsController.RemoveEffect(id);
 			}
 			
-			TickCount -= 1;
-
-			if (TickCount == TickDelay) OnTick();
+			tickCount -= 1;
+			
+			if (tickCount == TickDelay) OnTick();
 		}
 
-		public virtual void OnTick() { }
+		public virtual void OnTick()
+		{
+			tickCount = effectTickLength == -1 ? -1 : 0;
+		}
 		
 		public virtual void EndEffect()
 		{
-			TickCount = 0;
+			tickCount = 0;
+			
+			Character.RemoveEffect(id);
 		}
 	}
 }

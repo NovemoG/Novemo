@@ -23,7 +23,7 @@ namespace Inventories.Slots
 			_playerInstance = GameManager.Instance.PlayerManager.playerClass;
 		}
 		
-		public override bool AddItem(Item itemToAdd)
+		public override bool AddItem(Item itemToAdd, bool submitStats = true)
 		{
 			if (IsFull) return false;
 			if (itemToAdd is not Equipment equipment) return false;
@@ -33,16 +33,19 @@ namespace Inventories.Slots
 			item = equipment;
 			
 			slotIcon.gameObject.SetActive(true);
-			slotIcon.sprite = item.itemIcon;
-			
-			_equipmentManager.EquipCharacterItem(_playerInstance, equipment);
+			slotIcon.sprite = item.Icon;
 
+			if (submitStats)
+			{
+				_equipmentManager.EquipCharacterItem(_playerInstance, equipment);
+			}
+			
 			return true;
 		}
 
-		public bool CanAdd(Item cItem)
+		public bool CanAdd(Item eItem)
 		{
-			if (cItem is not Equipment equipment) return false;
+			if (eItem is not Equipment equipment) return false;
 			return equipment.equipSlotType == equipSlotType;
 		}
 

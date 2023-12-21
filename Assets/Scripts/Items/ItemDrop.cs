@@ -15,8 +15,8 @@ namespace Items
 			{
 				if (value == null) return;
 				
-				spriteRenderer.sprite = value.itemIcon;
-				shadowRenderer.sprite = value.itemIcon;
+				spriteRenderer.sprite = value.Icon;
+				shadowRenderer.sprite = value.Icon;
 				item = value;
 			}
 		}

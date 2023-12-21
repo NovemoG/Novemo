@@ -13,15 +13,139 @@ MonoBehaviour:
   m_Name: CommonChestEarly
   m_EditorClassIdentifier: 
   possibleLoot:
-  - item: {fileID: 11400000, guid: d55dcd3ac17db0441b39677e977083d9, type: 2}
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
     minCount: 0
     maxCount: 1
     weight: 70
-  - item: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+  - item:
+      itemData: {fileID: 11400000, guid: 9a83ebcc05fef4828ae2da71de62532c, type: 2}
     minCount: 0
     maxCount: 3
     weight: 7
-  - item: {fileID: 11400000, guid: 9a83ebcc05fef4828ae2da71de62532c, type: 2}
+  - item:
+      itemData: {fileID: 11400000, guid: e5250a8c2013f43dab00829ecbd02584, type: 2}
     minCount: 0
     maxCount: 2
     weight: 3
+  generatedLoot:
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 3
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 4
+  - item:
+      itemData: {fileID: 11400000, guid: 9a83ebcc05fef4828ae2da71de62532c, type: 2}
+    count: 1
+    slotId: 5
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 6
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 8
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 10
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 12
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 13
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 14
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 15
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 16
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 17
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 19
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 20
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 21
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 24
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 25
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 27
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 28
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 29
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 30
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 31
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 32
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 33
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 34
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 35
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 36
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 37
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 38
+  - item:
+      itemData: {fileID: 11400000, guid: 5379cc37863f04f07b0410cf2879d170, type: 2}
+    count: 1
+    slotId: 39

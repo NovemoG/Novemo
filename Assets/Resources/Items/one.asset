@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fa9f782e2424afda7f2bfad80236351, type: 3}
   m_Name: one
   m_EditorClassIdentifier: 
+  id: 1
   itemName: one
   itemDescription: oneone
   itemIcon: {fileID: -1571032043, guid: 0b3e2a96cd1e24d43864db83fc79db43, type: 3}
   itemType: 1
   itemRarity: 1
   stackLimit: 3
-  itemTags: []
+  questItem: 0
   baseSellCost: 0
   baseBuyCost: 0

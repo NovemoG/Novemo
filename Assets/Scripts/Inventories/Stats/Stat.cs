@@ -11,11 +11,21 @@ namespace Inventories.Stats
 		public int statIndex;
 		public TextMeshProUGUI statText;
 		
-		public void UpdateText(float baseValue, float bonusValue, float value)
+		public void UpdateText(global::Stats.Stat stat)
 		{
-			statText.text = details == "f+%"
-				? $"{statName}: {baseValue} + {bonusValue}%"
-				: $"{statName}: {value}{details}";
+			switch (details)
+			{
+				case "f+%":
+					statText.text = $"{statName}: {stat.BaseValue}";
+					if (stat.BonusValue > 0) statText.text += $" + {stat.BonusValue * 100}%";
+					break;
+				case "%":
+					statText.text = $"{statName}: {stat.Value * 100}%";
+					break;
+				default:
+					statText.text = $"{statName}: {stat.Value}{details}";
+					break;
+			}
 		}
 	}
 }

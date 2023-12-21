@@ -781,7 +781,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 2
+  m_text: 1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1285,76 +1285,77 @@ MonoBehaviour:
   stats:
   - statName: 0
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 1
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 2
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 3
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 4
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 5
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 6
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 7
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 8
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 9
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 10
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 11
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 12
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 13
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 14
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 15
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 16
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 17
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 18
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 19
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 20
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   - statName: 21
     baseValue: 0
-    bonusValues: []
+    bonusValue: 0
   level: 1
+  currentExp: 0
+  healthRegenEffect: {fileID: 11400000, guid: c2c01cee0b1b0854f85e5835a0025401, type: 2}
+  manaRegenEffect: {fileID: 11400000, guid: 6658ef4496a071c4a9882a6ab737bce7, type: 2}
   levelText: {fileID: 4323634083935006328}
   weaponObject: {fileID: 1133823925851838692}
   slashObject: {fileID: 2258363294185609894}
-  weapon: {fileID: 0}
-  playerSize: 1
 --- !u!114 &2819341322429857563
 MonoBehaviour:
   m_ObjectHideFlags: 0

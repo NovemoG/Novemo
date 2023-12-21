@@ -1,30 +1,50 @@
+using System;
 using System.Collections.Generic;
 using Core;
 using Enums;
 using Interfaces;
 using Stats;
 using StatusEffects;
-using UnityEngine;
 
 namespace Items.Equipment
 {
-	[CreateAssetMenu(fileName = "New Equipment", menuName = "Items/Equipment/Equipment")]
+	[Serializable]
 	public class Equipment : Item, IEquippable
 	{
-		public EquipSlotType equipSlotType;
+		public Equipment(ItemData itemData) : base(itemData)
+		{
+			stats = new List<ItemStat>();
+			effects = new List<StatusEffect>();
+		}
+		
+		public Equipment(EquipmentData equipmentData) : base(equipmentData)
+		{
+			equipSlotType = equipmentData.equipSlotType;
+			stats = equipmentData.stats;
+			effects = new List<StatusEffect>();
 
-		[ListElementTitle("statName")] public List<ItemStat> stats;
+			foreach (var effect in equipmentData.effects)
+			{
+				effects.Add(Create.EffectInstance(effect));
+			}
+		}
+		
+		public EquipSlotType equipSlotType;
+		
+		public List<ItemStat> stats;
 		public List<StatusEffect> effects;
 
 		public override void GenerateTooltip()
 		{
 			ItemTooltip = string.Format(Templates.EquipmentTooltip, 
-				Templates.FormatItemName(itemName, itemRarity), itemDescription, stackLimit);
+				Templates.FormatItemName(Name, Rarity), Description, StackLimit);
 
+			if (stats.Count != 0) ItemTooltip += Templates.NewLine;
 			for (int i = 0; i < stats.Count; i++)
 			{
 				var statName = stats[i].statName.ToString().Replace('_', ' ');
 				
+				//TODO get colored tooltip from templates
 				switch (stats[i].statName)
 				{
 					case StatName.Health:
@@ -39,7 +59,7 @@ namespace Items.Equipment
 					case StatName.Magic_Resist_Penetration:
 					case StatName.Life_Steal:
 					case StatName.Ability_Vampirism:
-						ItemTooltip += statName;
+						ItemTooltip += $"<color=#4E4E4EC8><size=20>{statName}";
 						
 						if (stats[i].baseValue != 0)
 						{
@@ -49,10 +69,10 @@ namespace Items.Equipment
 						if (stats[i].bonusValue != 0)
 						{
 							var sign = stats[i].bonusValue > 0 ? '+' : '-';
-							ItemTooltip += $" {sign}{stats[i].bonusValue}%";
+							ItemTooltip += $" {sign}{stats[i].bonusValue * 100}%";
 						}
 						
-						ItemTooltip += "\n";
+						ItemTooltip += "</size></color>\n";
 						break;
 					case StatName.Lethal_Damage:
 					case StatName.Attack_Speed:
@@ -64,19 +84,20 @@ namespace Items.Equipment
 					case StatName.Exp_Bonus:
 					case StatName.Counter_Chance:
 					case StatName.Double_Attack_Chance:
-						ItemTooltip += string.Format($"{statName} +{stats[i].bonusValue}%\n");
+						ItemTooltip += string.Format($"{statName} +{stats[i].bonusValue * 100}%\n");
 						break;
 				}
 			}
 			
+			if (effects.Count != 0) ItemTooltip += Templates.NewLine;
 			for (int i = 0; i < effects.Count; i++)
 			{
-				ItemTooltip += $"{effects[i].EffectName}\n{effects[i].FormattedDescription}\n";
+				ItemTooltip += $"<color=#282828><size=20><b>{effects[i].EffectName}</b>\n{effects[i].FormattedDescription}</size></color>\n";
 			}
 
-			ItemTooltip += $"<color=#282828><size=20><i>{equipSlotType}</i></size></color>";
+			ItemTooltip += $"{Templates.NewLine}<color=#282828><size=20><i>{equipSlotType}</i></size></color>\n";
 
-			ItemTooltip += string.Format(Templates.ItemTypeTooltip, itemType);
+			ItemTooltip += string.Format(Templates.ItemTypeTooltip, Type);
 		}
 
 		public override bool Use()
@@ -93,15 +114,26 @@ namespace Items.Equipment
 
 		public virtual bool Unequip()
 		{
-
-
 			return true;
 		}
 
 		protected override bool Equals(Item other)
 		{
-			var equipment = other as Equipment;
+			if (other is not Equipment equipment) return false;
 
+			if (equipSlotType != equipment.equipSlotType) return false;
+			if (effects.Count != equipment.effects.Count) return false;
+			if (stats.Count != equipment.stats.Count) return false;
+			
+			for (int i = 0; i < effects.Count; i++)
+			{
+				if (effects[i].EffectData.id != equipment.effects[i].EffectData.id) return false;
+			}
+			for (int i = 0; i < stats.Count; i++)
+			{
+				if (stats[i] != equipment.stats[i]) return false;
+			}
+			
 			return true;
 		}
 	}

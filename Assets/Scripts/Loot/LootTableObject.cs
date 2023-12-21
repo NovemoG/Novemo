@@ -10,14 +10,11 @@ namespace Loot
 	public class LootTableObject : ScriptableObject
 	{
 		[SerializeField] private List<Loot> possibleLoot;
-		public List<GeneratedLoot> GeneratedLoot;
-		
-		private HashSet<int> _excludedIds;
+		public List<GeneratedLoot> generatedLoot;
 
 		public void GenerateLoot()
 		{
-			GeneratedLoot = new List<GeneratedLoot>();
-			_excludedIds = new HashSet<int>();
+			generatedLoot = new List<GeneratedLoot>();
 			var weight = 0;
 			
 			for (int i = 0; i < possibleLoot.Count; i++)
@@ -27,7 +24,7 @@ namespace Loot
 			
 			for (var i = 0; i < Metrics.ChestSize; i++)
 			{
-				foreach (var loot in possibleLoot.Where(l => l.item.itemName != "None"))
+				foreach (var loot in possibleLoot.Where(l => l.item.Name != "None"))
 				{
 					if (Random.Range(0, weight) > loot.weight * loot.maxCount) continue;
 
@@ -37,26 +34,26 @@ namespace Loot
 					{
 						itemCount += Random.Range(0, 100) < loot.weight * loot.maxCount / (itemCount - loot.minCount) ? 1 : 0;
 					}
+					
+					loot.item.GenerateTooltip();
 				
-					GeneratedLoot.Add(new GeneratedLoot
+					generatedLoot.Add(new GeneratedLoot
 					{
-						Item = loot.item,
-						Count = itemCount,
-						SlotId = i
+						item = loot.item,
+						count = itemCount,
+						slotId = i
 					});
 					
 					break;
 				}
 			}
-			
-			_excludedIds.Clear();
 		}
 		
 		public void Reset()
 		{
 			var none = new Loot
 			{
-				item = Resources.Load<Item>("Items/None"),
+				item = new Item(Resources.Load<ItemData>("Items/None")),
 				maxCount = 1
 			};
 			possibleLoot.Add(none);

@@ -9,16 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc32e716e03442afaf1f5067d3bd033f, type: 3}
-  m_Name: TestEffect
+  m_Script: {fileID: 11500000, guid: 31a3bd9cfb1d4248bb524c8384fb9c2b, type: 3}
+  m_Name: CharacterHealthRegen
   m_EditorClassIdentifier: 
-  id: 215
-  paused: 0
-  character: {fileID: 0}
-  effectDescription: 
-  effectDetails:
-    effectName: HRegen
-    seconds: -1
-    tickDelay: -26
-    canStack: 1
-    effectStrength: 0
+  id: 1
+  effectType: 0
+  effectName: Health Regen
+  effectDescription: Regenerates {0} health every {1}
+  effectStrength: 0
+  seconds: -1
+  tickDelay: -25
+  removable: 0
+  canStack: 0

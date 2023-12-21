@@ -2,6 +2,7 @@
 {
 	public enum EffectType
 	{
-		Regen,
+		HealthRegen,
+		ManaRegen,
 	}
 }

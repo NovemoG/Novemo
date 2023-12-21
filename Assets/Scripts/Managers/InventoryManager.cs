@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Core;
 using DG.Tweening;
+using Enums;
 using Inventories;
 using Inventories.Slots;
 using Inventories.Stats;
@@ -11,6 +12,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using static Enums.ActionCode;
 using Random = UnityEngine.Random;
 
 namespace Managers
@@ -55,9 +57,9 @@ namespace Managers
         public bool ChestOpen { get; private set; }
         public bool EquipmentOpen { get; private set; }
 
-        public Item red;
-        public Item yellow;
-        public Item green;
+        public ItemData red;
+        public ItemData yellow;
+        public ItemData green;
 
         private void Start()
         {
@@ -73,12 +75,12 @@ namespace Managers
                 if (SelectedSlotId == 12)
                 {
                     SelectedSlotId = 0;
-                    playerInventory.AllSlots[0].ToggleComponent.isOn = true;
+                    playerInventory.allSlots[0].ToggleComponent.isOn = true;
                 }
                 else
                 {
                     SelectedSlotId += 1;
-                    playerInventory.AllSlots[SelectedSlotId].ToggleComponent.isOn = true;
+                    playerInventory.allSlots[SelectedSlotId].ToggleComponent.isOn = true;
                 }
             }
             else if (Input.GetAxisRaw("Mouse ScrollWheel") < 0)
@@ -86,12 +88,12 @@ namespace Managers
                 if (SelectedSlotId == 0)
                 {
                     SelectedSlotId = 12;
-                    playerInventory.AllSlots[12].ToggleComponent.isOn = true;
+                    playerInventory.allSlots[12].ToggleComponent.isOn = true;
                 }
                 else
                 {
                     SelectedSlotId -= 1;
-                    playerInventory.AllSlots[SelectedSlotId].ToggleComponent.isOn = true;
+                    playerInventory.allSlots[SelectedSlotId].ToggleComponent.isOn = true;
                 }
             }
             
@@ -99,18 +101,18 @@ namespace Managers
             {
                 if (Input.GetKeyDown(KeyCode.I))
                 {
-                    playerInventory.AddItem(red);
+                    playerInventory.AddItem(Create.ItemInstance(red));
                 }
                 if (Input.GetKeyDown(KeyCode.O))
                 {
-                    playerInventory.AddItem(yellow);
+                    playerInventory.AddItem(Create.ItemInstance(yellow));
                 }
                 if (Input.GetKeyDown(KeyCode.P))
                 {
-                    playerInventory.AddItem(green);
+                    playerInventory.AddItem(Create.ItemInstance(green));
                 }
 
-                if (Input.GetKeyDown(KeyCode.C) && (!VaultOpen || !ChestOpen))
+                if (Tooltip.GetKeyDown() && (!VaultOpen || !ChestOpen))
                 {
                     ShowTooltip = !ShowTooltip;
 
@@ -119,11 +121,11 @@ namespace Managers
                         itemTooltipTransform.gameObject.SetActive(false);
                     }
                 }
-                if (Input.GetKeyDown(KeyCode.V))
+                if (Vault.GetKeyDown())
                 {
                     ToggleVault();
                 }
-                if (Input.GetKeyDown(KeyCode.E))
+                if (Equipment.GetKeyDown())
                 {
                     ToggleEquipment();
                 }
@@ -167,7 +169,6 @@ namespace Managers
                 DeselectSlot();
             }
             
-            //TODO set active false
             DOTween.To(() => vaultRectTransform.anchoredPosition.x,
                 x => vaultRectTransform.anchoredPosition = new Vector2(x, vaultRectTransform.anchoredPosition.y),
                 Metrics.DefaultVaultPosition.x, 0.21f).OnComplete(() => vaultRectTransform.gameObject.SetActive(false)).intId = 4;
@@ -184,16 +185,15 @@ namespace Managers
             DOTween.Kill(5);
             
             ChestOpen = true;
-
+            chestRectTransform.gameObject.SetActive(true);
+            
             _currentChest = chest;
-            foreach (var loot in _currentChest.ChestItems)
+            foreach (var loot in _currentChest.chestItems)
             {
-                chestInventory.AllSlots[loot.SlotId].AddItems(loot.Item, loot.Count);
+                chestInventory.allSlots[loot.slotId].AddItems(loot.item, loot.count);
             }
             
             if (!VaultOpen) OpenVault();
-
-            chestRectTransform.gameObject.SetActive(true);
             
             DOTween.To(() => chestRectTransform.anchoredPosition.x,
                 x => chestRectTransform.anchoredPosition = new Vector2(x, chestRectTransform.anchoredPosition.y),
@@ -206,18 +206,18 @@ namespace Managers
             
             ChestOpen = false;
 
-            _currentChest.ChestItems = new List<GeneratedLoot>();
+            _currentChest.chestItems = new List<GeneratedLoot>();
             
-            for (var i = 0; i < chestInventory.AllSlots.Count; i++)
+            for (var i = 0; i < chestInventory.allSlots.Count; i++)
             {
-                var slot = chestInventory.AllSlots[i];
+                var slot = chestInventory.allSlots[i];
                 if (slot.IsEmpty) continue;
 
-                _currentChest.ChestItems.Add(new GeneratedLoot
+                _currentChest.chestItems.Add(new GeneratedLoot
                 {
-                    Item = slot.Item,
-                    Count = slot.ItemCount,
-                    SlotId = i
+                    item = slot.Item,
+                    count = slot.ItemCount,
+                    slotId = i
                 });
 
                 slot.ClearSlot();
@@ -277,7 +277,7 @@ namespace Managers
         {
             SelectedSlotId = 0;
             SelectedSlotInventory = 0;
-            playerInventory.AllSlots[0].ToggleComponent.isOn = true;
+            playerInventory.allSlots[0].ToggleComponent.isOn = true;
         }
 
         /// <summary>

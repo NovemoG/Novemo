@@ -90,7 +90,7 @@ namespace Inventories
 				return;
 			}
 			
-			if (currentSlot.Item == _startingSlot.Item)
+			if (_startingSlot.Item == currentSlot.Item)
 			{
 				_inventoryManager.MergeStacks(_startingSlot, currentSlot);
 			}

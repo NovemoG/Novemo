@@ -23,7 +23,7 @@ namespace Inventories.Stats
 		public void OnPointerEnter(PointerEventData eventData)
 		{
 			var stat = _playerClass.Stats[_stat.statIndex];
-			_inventoryManager.statTooltipText.text = $"Base value: {stat.BaseValue}\nBonus value: {stat.BonusValue()}";
+			_inventoryManager.statTooltipText.text = $"Base value: {stat.BaseValue}\nBonus value: +{stat.BonusValue * 100}%";
 			_tooltipTransform.gameObject.SetActive(true);
 		}
 

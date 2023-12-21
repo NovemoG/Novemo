@@ -1,4 +1,3 @@
-using System;
 using DG.Tweening;
 using Items;
 using Managers;
@@ -16,26 +15,27 @@ namespace Inventories.Slots
 
         [SerializeField] protected int itemCount;
         public int ItemCount => itemCount;
+
+        [SerializeField] protected Image slotIcon;
+        [SerializeField] protected TextMeshProUGUI stackText;
+        
+        [SerializeField] protected GameObject borderObject;
+        [SerializeField] protected GameObject backgroundObject;
         
         public bool IsEmpty => itemCount == 0;
-        public bool IsFull => !IsEmpty && itemCount == item.stackLimit;
+        public bool IsFull => !IsEmpty && itemCount == item.StackLimit;
 
-        public Image slotIcon;
-        public TextMeshProUGUI stackText;
-        
-        public GameObject borderObject;
-        public GameObject backgroundObject;
-
+        public int ParentInventoryId { get; private set; }
         public Toggle ToggleComponent { get; private set; }
         
+        protected int SlotTweenId;
         protected RectTransform SlotIconRect;
         protected InventoryManager InventoryManager;
-        
-        protected int SlotTweenId;
-        [NonSerialized] public int ParentInventoryId;
 
         protected virtual void Awake()
         {
+            if (itemCount == 0) item = null;
+            
             InventoryManager = GameManager.Instance.InventoryManager;
 
             SlotIconRect = transform.GetChild(1).GetComponent<RectTransform>();
@@ -58,7 +58,7 @@ namespace Inventories.Slots
             SlotTweenId = GetHashCode();
         }
 
-        public virtual bool AddItem(Item itemToAdd)
+        public virtual bool AddItem(Item itemToAdd, bool submitStats = true)
         {
             if (IsFull) return false;
             if (!IsEmpty && item != itemToAdd) return false;
@@ -70,7 +70,7 @@ namespace Inventories.Slots
                 case 1:
                     item = itemToAdd;
                     slotIcon.gameObject.SetActive(true);
-                    slotIcon.sprite = item.itemIcon;
+                    slotIcon.sprite = item.Icon;
                     break;
                 case > 1:
                     stackText.gameObject.SetActive(true);

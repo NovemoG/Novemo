@@ -10,7 +10,7 @@ namespace Enums
         Weapon,
         Gloves,
         Shield,
-        Accessories,
+        Accessory,
         Pickaxe
     }
 }

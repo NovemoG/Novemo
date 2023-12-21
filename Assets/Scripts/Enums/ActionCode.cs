@@ -1,0 +1,36 @@
+namespace Enums
+{
+	public enum ActionCode
+	{
+		None,
+		Escape,
+		MoveUp,
+		MoveDown,
+		MoveRight,
+		MoveLeft,
+		Attack,
+		Block,
+		Ability1,
+		Ability2,
+		Ability3,
+		Ability4,
+		Item1,
+		Item2,
+		Item3,
+		Item4,
+		Item5,
+		Item6,
+		Item7,
+		Item8,
+		Item9,
+		Item10,
+		Item11,
+		Item12,
+		Vault,
+		Chest,
+		Equipment,
+		Crafting,
+		Interact,
+		Tooltip,
+	}
+}
